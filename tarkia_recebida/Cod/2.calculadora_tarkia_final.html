@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Otimização Fiscal e Investimentos - Tarkia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .tarkia-gold { color: #c8a46e; }
+        .tarkia-dark { color: #1a1a1a; }
+        .bg-tarkia-dark { background-color: #1a1a1a; }
+        .bg-tarkia-gold { background-color: #c8a46e; }
+        .border-tarkia-gold { border-color: #c8a46e; }
+        .btn-primary {
+            background-color: #c8a46e;
+            color: #1a1a1a;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #1a1a1a;
+            color: #c8a46e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            margin-right: 0.5rem;
+        }
+        .tab-active {
+            border-bottom: 3px solid #c8a46e;
+            color: #c8a46e;
+            font-weight: 600;
+        }
+        .tab-inactive {
+            color: #6b7280;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+        }
+        .input-field {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .input-field:focus {
+            border-color: #c8a46e;
+            box-shadow: 0 0 0 3px rgba(200, 164, 110, 0.2);
+            outline: none;
+        }
+        #lead-capture-section {
+            display: block;
+        }
+        #main-calculator-section {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-8">
+            <img src="https://media.licdn.com/dms/image/D4D0BAQG5S6q4iwP2mw/company-logo_200_200/0/1699293626256/tarkia_group_logo?e=2147483647&v=beta&t=4x2e293a_8wQY7TzVd2j8sY5x9aZ4pX7c8b9a0" alt="Tarkia Logo" class="mx-auto h-24 w-auto mb-4">
+            <h1 class="text-3xl md:text-4xl font-bold tarkia-dark">Calculadora de Otimização Fiscal e Investimentos</h1>
+            <p class="text-gray-600 mt-2 text-lg">Descubra seu potencial de economia e crescimento nos Emirados Árabes Unidos.</p>
+        </header>
+
+        <div id="lead-capture-section" class="card p-8 max-w-2xl mx-auto">
+            <h2 class="text-2xl font-bold text-center tarkia-dark mb-6">Comece sua Análise Personalizada</h2>
+            <p class="text-center text-gray-500 mb-8">Preencha seus dados para desbloquear a calculadora e receber uma análise detalhada.</p>
+            <form id="lead-form">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                        <input type="text" id="name" name="name" class="w-full input-field" placeholder="Seu nome" required>
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                        <input type="email" id="email" name="email" class="w-full input-field" placeholder="seu@email.com" required>
+                    </div>
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                        <input type="tel" id="phone" name="phone" class="w-full input-field" placeholder="+55 11 99999-9999" required>
+                    </div>
+                    <div>
+                        <label for="whatsapp" class="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
+                        <input type="tel" id="whatsapp" name="whatsapp" class="w-full input-field" placeholder="+55 11 99999-9999" required>
+                    </div>
+                </div>
+                <div class="mt-8 text-center">
+                    <button type="submit" class="btn-primary py-3 px-8 rounded-lg text-lg">
+                        <i class="fas fa-lock-open mr-2"></i> Desbloquear Calculadora
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <main id="main-calculator-section" class="card p-4 md:p-8">
+            <div class="border-b border-gray-200 mb-6">
+                <nav class="flex flex-wrap -mb-px" aria-label="Tabs">
+                    <button class="tab-btn tab-active" data-tab="empresarial">
+                        <i class="fas fa-briefcase mr-2"></i>Empresarial
+                    </button>
+                    <button class="tab-btn tab-inactive" data-tab="imoveis">
+                        <i class="fas fa-building mr-2"></i>Imóveis
+                    </button>
+                    <button class="tab-btn tab-inactive" data-tab="custo-vida">
+                        <i class="fas fa-shopping-cart mr-2"></i>Custo de Vida
+                    </button>
+                    <button class="tab-btn tab-inactive" data-tab="vistos">
+                        <i class="fas fa-passport mr-2"></i>Vistos e Residência
+                    </button>
+                    <button class="tab-btn tab-inactive" data-tab="planejamento">
+                        <i class="fas fa-compass mr-2"></i>Planejamento 360°
+                    </button>
+                </nav>
+            </div>
+
+            <div id="tab-content">
+                <!-- Aba Empresarial -->
+                <div id="empresarial" class="tab-pane">
+                    <h3 class="text-2xl font-bold tarkia-dark mb-6">Análise de Otimização Fiscal Empresarial</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div>
+                            <label for="faturamento" class="block text-sm font-medium text-gray-700 mb-1">Faturamento Anual (USD)</label>
+                            <input type="number" id="faturamento" class="w-full input-field" placeholder="Ex: 500000" value="500000">
+                        </div>
+                        <div>
+                            <label for="pais-comparacao" class="block text-sm font-medium text-gray-700 mb-1">País de Comparação</label>
+                            <select id="pais-comparacao" class="w-full input-field">
+                                <option value="brasil">Brasil (34%)</option>
+                                <option value="portugal">Portugal (31.5%)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tipo-negocio" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Negócio</label>
+                            <select id="tipo-negocio" class="w-full input-field">
+                                <option>Consultoria</option>
+                                <option>E-commerce</option>
+                                <option>Trading</option>
+                                <option>Serviços Digitais</option>
+                                <option>Holding</option>
+                                <option>Manufatura</option>
+                                <option>Logística</option>
+                                <option>Educação</option>
+                                <option>Saúde</option>
+                                <option>Marketing</option>
+                                <option>Outro</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="free-zone" class="block text-sm font-medium text-gray-700 mb-1">Free Zone (EAU)</label>
+                            <select id="free-zone" class="w-full input-field">
+                                <!-- Options will be populated by JS -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="text-center mb-8">
+                        <button id="calcular-empresarial" class="btn-primary py-3 px-8 rounded-lg text-lg">
+                            <i class="fas fa-calculator mr-2"></i>Calcular Economia
+                        </button>
+                    </div>
+                    <div id="resultado-empresarial" class="hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                            <div class="p-6 bg-gray-50 rounded-lg">
+                                <h4 class="text-lg font-semibold text-gray-500" id="label-pais-comparado">Impostos no Brasil</h4>
+                                <p class="text-4xl font-bold text-red-600" id="imposto-pais-comparado">$0</p>
+                            </div>
+                            <div class="p-6 bg-gray-50 rounded-lg">
+                                <h4 class="text-lg font-semibold text-gray-500">Custos Totais nos EAU</h4>
+                                <p class="text-4xl font-bold text-blue-600" id="custo-total-eau">$0</p>
+                                <p class="text-sm text-gray-500 mt-1" id="detalhe-custo-eau">Licença + Imposto</p>
+                            </div>
+                            <div class="p-6 bg-tarkia-gold/10 rounded-lg">
+                                <h4 class="text-lg font-semibold tarkia-gold">Economia Anual Potencial</h4>
+                                <p class="text-4xl font-bold tarkia-gold" id="economia-anual">$0</p>
+                            </div>
+                        </div>
+                        <div class="mt-8">
+                            <canvas id="chart-empresarial"></canvas>
+                        </div>
+                         <p class="text-xs text-gray-500 mt-4 text-center italic">Nota: Os valores são aproximados e baseados em pacotes standard de licenças e na legislação fiscal vigente. Uma consultoria com a Tarkia é necessária para obter valores exatos e um planejamento personalizado.</p>
+                    </div>
+                </div>
+                
+                <div id="imoveis" class="tab-pane hidden"><p class="text-center p-8 text-gray-500">Aba de Imóveis em desenvolvimento.</p></div>
+                <div id="custo-vida" class="tab-pane hidden"><p class="text-center p-8 text-gray-500">Aba de Custo de Vida em desenvolvimento.</p></div>
+                <div id="vistos" class="tab-pane hidden"><p class="text-center p-8 text-gray-500">Aba de Vistos e Residência em desenvolvimento.</p></div>
+                <div id="planejamento" class="tab-pane hidden"><p class="text-center p-8 text-gray-500">Aba de Planejamento 360° em desenvolvimento.</p></div>
+            </div>
+            
+            <div class="mt-8 text-center border-t pt-6">
+                <button id="download-pdf" class="btn-primary py-3 px-8 rounded-lg text-lg">
+                    <i class="fas fa-file-pdf mr-2"></i>Download Relatório PDF
+                </button>
+            </div>
+        </main>
+        
+        <footer class="text-center mt-12">
+            <p class="text-gray-500">&copy; 2025 Tarkia Group. Todos os direitos reservados.</p>
+            <p class="text-xs text-gray-400 mt-2">Esta calculadora é uma ferramenta de simulação. Os resultados não constituem aconselhamento financeiro ou legal.</p>
+        </footer>
+    </div>
+
+    <script>
+    const tarkiaData = {
+        freeZones: {
+            "JAFZA": { name: "JAFZA (Jebel Ali Free Zone)", cost: 23000, activities: "Logística, Manufatura, Trading" },
+            "DMCC": { name: "DMCC (Dubai Multi Commodities Centre)", cost: 25000, activities: "Commodities, Cripto, Serviços" },
+            "DAFZA": { name: "DAFZA (Dubai Airport Freezone)", cost: 22000, activities: "Aviação, Logística, Import/Export" },
+            "DIFC": { name: "DIFC (Dubai Int'l Financial Centre)", cost: 35000, activities: "Serviços Financeiros, Fintech, Holdings" },
+            "IFZA": { name: "IFZA (Int'l Free Zone Authority)", cost: 12500, activities: "Consultoria, Trading, Serviços Profissionais" },
+            "Meydan": { name: "Meydan Free Zone", cost: 14350, activities: "Consultoria, Mídia, Investimentos" },
+            "SAIF": { name: "SAIF Zone (Sharjah Airport Int'l)", cost: 19000, activities: "Industrial, Logística" },
+            "Hamriyah": { name: "Hamriyah Free Zone (Sharjah)", cost: 21000, activities: "Industrial Pesada, Óleo e Gás" },
+            "Ajman": { name: "Ajman Free Zone", cost: 16000, activities: "PMEs, Trading" },
+            "RAKEZ": { name: "RAKEZ (Ras Al Khaimah Economic Zone)", cost: 17000, activities: "Industrial, Educacional, Trading" },
+            "Fujairah": { name: "Fujairah Free Zone", cost: 18500, activities: "Logística, Trading" },
+            "UAQ": { name: "UAQ Free Trade Zone", cost: 15000, activities: "Consultoria, Trading Geral" },
+            "ADGM": { name: "ADGM (Abu Dhabi Global Market)", cost: 15000, activities: "Serviços Financeiros, Holdings, Trusts" },
+            "RAK_ICC": { name: "RAK ICC (RAK Int'l Corporate Centre)", cost: 2500, activities: "Holding, Estruturas Internacionais, Offshore" },
+            "RAK_DAO": { name: "RAK DAO (RAK Digital Assets Oasis)", cost: 5100, activities: "Ativos Digitais, Web3, IA, Metaverso" }
+        },
+        taxRates: {
+            brasil: 0.34,
+            portugal: 0.315,
+            uae: {
+                rate: 0.09,
+                threshold: 375000, // in AED
+                usd_aed_rate: 3.67
+            }
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const leadForm = document.getElementById('lead-form');
+        const leadCaptureSection = document.getElementById('lead-capture-section');
+        const mainCalculatorSection = document.getElementById('main-calculator-section');
+        
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        const faturamentoInput = document.getElementById('faturamento');
+        const paisComparacaoSelect = document.getElementById('pais-comparacao');
+        const freeZoneSelect = document.getElementById('free-zone');
+        const calcularBtn = document.getElementById('calcular-empresarial');
+        const resultadoDiv = document.getElementById('resultado-empresarial');
+        const impostoPaisComparadoEl = document.getElementById('imposto-pais-comparado');
+        const custoTotalEauEl = document.getElementById('custo-total-eau');
+        const detalheCustoEauEl = document.getElementById('detalhe-custo-eau');
+        const economiaAnualEl = document.getElementById('economia-anual');
+        const labelPaisComparadoEl = document.getElementById('label-pais-comparado');
+        
+        let chartEmpresarial = null;
+
+        // Populate Free Zones
+        const freeZoneOptions = Object.entries(tarkiaData.freeZones).map(([key, value]) => {
+            return `<option value="${key}">${value.name} - $${value.cost.toLocaleString()}</option>`;
+        }).join('');
+        freeZoneSelect.innerHTML = freeZoneOptions;
+
+        // Lead Capture Logic
+        leadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+
+            if (name && email && phone && whatsapp) {
+                leadCaptureSection.style.display = 'none';
+                mainCalculatorSection.style.display = 'block';
+            } else {
+                alert('Por favor, preencha todos os campos.');
+            }
+        });
+
+        // Tab Navigation
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('tab-active');
+                    btn.classList.add('tab-inactive');
+                });
+                button.classList.add('tab-active');
+                button.classList.remove('tab-inactive');
+
+                tabPanes.forEach(pane => {
+                    pane.classList.add('hidden');
+                });
+                document.getElementById(button.dataset.tab).classList.remove('hidden');
+            });
+        });
+
+        // Calculation Logic
+        calcularBtn.addEventListener('click', () => {
+            const faturamento = parseFloat(faturamentoInput.value);
+            const pais = paisComparacaoSelect.value;
+            const freeZoneKey = freeZoneSelect.value;
+
+            if (isNaN(faturamento) || faturamento <= 0) {
+                alert('Por favor, insira um valor de faturamento válido.');
+                return;
+            }
+
+            const freeZoneData = tarkiaData.freeZones[freeZoneKey];
+            const taxRatePais = tarkiaData.taxRates[pais];
+            
+            // Calculation for compared country
+            const impostoPais = faturamento * taxRatePais;
+            
+            // Calculation for UAE
+            const faturamentoUSD = faturamento;
+            const lucroTributavelUSD = faturamentoUSD - freeZoneData.cost;
+            
+            const lucroTributavelAED = lucroTributavelUSD * tarkiaData.taxRates.uae.usd_aed_rate;
+            
+            let impostoUAE_AED = 0;
+            if (lucroTributavelAED > tarkiaData.taxRates.uae.threshold) {
+                 impostoUAE_AED = (lucroTributavelAED - tarkiaData.taxRates.uae.threshold) * tarkiaData.taxRates.uae.rate;
+            }
+            const impostoUAE_USD = impostoUAE_AED / tarkiaData.taxRates.uae.usd_aed_rate;
+
+            const custoTotalUAE = freeZoneData.cost + impostoUAE_USD;
+            const economia = impostoPais - custoTotalUAE;
+
+            // Display results
+            labelPaisComparadoEl.textContent = `Impostos em ${pais.charAt(0).toUpperCase() + pais.slice(1)}`;
+            impostoPaisComparadoEl.textContent = `$${impostoPais.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+            custoTotalEauEl.textContent = `$${custoTotalUAE.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+            detalheCustoEauEl.textContent = `Licença $${freeZoneData.cost.toLocaleString()} + Imposto $${impostoUAE_USD.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+            economiaAnualEl.textContent = `$${economia.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+            
+            resultadoDiv.classList.remove('hidden');
+
+            // Update Chart
+            const chartCtx = document.getElementById('chart-empresarial').getContext('2d');
+            if(chartEmpresarial) {
+                chartEmpresarial.destroy();
+            }
+            chartEmpresarial = new Chart(chartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Custos Totais'],
+                    datasets: [
+                        {
+                            label: `Custos em ${pais.charAt(0).toUpperCase() + pais.slice(1)}`,
+                            data: [impostoPais],
+                            backgroundColor: 'rgba(220, 38, 38, 0.7)',
+                            borderColor: 'rgba(220, 38, 38, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Custos nos EAU',
+                            data: [custoTotalUAE],
+                            backgroundColor: 'rgba(37, 99, 235, 0.7)',
+                            borderColor: 'rgba(37, 99, 235, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Comparativo de Custos Anuais',
+                            font: { size: 18 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+        
+        // PDF Download
+        document.getElementById('download-pdf').addEventListener('click', async () => {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'p',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const mainContent = document.getElementById('main-calculator-section');
+            const activeTab = mainContent.querySelector('.tab-pane:not(.hidden)');
+            
+            const canvas = await html2canvas(activeTab, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+            
+            const imgProps= pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth - 20, pdfHeight - 20);
+            pdf.save('relatorio-tarkia.pdf');
+        });
+
+    });
+    </script>
+</body>
+</html>
+

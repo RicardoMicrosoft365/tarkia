@@ -1,0 +1,393 @@
+================================================================================
+                    DADOS E CUSTOS - CALCULADORA TARKIA
+                         Análise Completa de Valores
+                         Atualizado: Janeiro 2025
+================================================================================
+
+🏛️ ALÍQUOTAS TRIBUTÁRIAS POR PAÍS
+================================================================================
+
+📊 BRASIL
+• Simples Nacional (Faixas de Faturamento):
+  - Até R$ 180.000:           6,0%
+  - R$ 180.001 - R$ 360.000:  11,2%
+  - R$ 360.001 - R$ 720.000:  13,5%
+  - R$ 720.001 - R$ 1.800.000: 16,0%
+  - R$ 1.800.001 - R$ 3.600.000: 21,0%
+  - Acima de R$ 3.600.000:    33,0%
+
+• Lucro Presumido:           11,33%
+• Lucro Presumido (Alto faturamento): 32,0%
+• Dias úteis para impostos: 149 dias/ano (40,8% do ano)
+
+📊 PORTUGAL
+• IRC + Derramas:           31,5%
+  - Taxa base IRC:          21,0%
+  - Derrama Municipal:      1,5%
+  - Derrama Estadual:       9,0%
+• Dias úteis para impostos: 128 dias/ano (35,1% do ano)
+
+📊 EMIRADOS ÁRABES UNIDOS (UAE)
+• Corporate Tax:
+  - Até USD 102.000:       0,0%
+  - Acima de USD 102.000:  9,0%
+• Free Zones:             0,0% (todas as zonas francas)
+• Dias úteis para impostos: 15 dias/ano (4,1% do ano)
+
+================================================================================
+
+🏢 FREE ZONES DOS UAE - CUSTOS ANUAIS
+================================================================================
+
+💰 PRINCIPAIS FREE ZONES (15 listadas no sistema):
+
+1. RAK ICC (RAK International Corporate Centre)
+   • Custo anual: USD 2.500
+   • Setup: USD 12.000
+   • Atividades: Holding, Estruturas Internacionais, Offshore
+
+2. RAK DAO (RAK Digital Assets Oasis)
+   • Custo anual: USD 5.100
+   • Setup: USD 12.000
+   • Atividades: Ativos Digitais, Web3, IA, Metaverso
+
+3. SHAMS (Sharjah Media City)
+   • Custo anual: USD 6.000
+   • Setup: USD 12.000
+   • Atividades: Mídia, Marketing, Produção
+
+4. DAFZ (Dubai Airport Free Zone)
+   • Custo anual: USD 8.000
+   • Setup: USD 15.000
+   • Atividades: Logística, Trading, Serviços
+
+5. IFZA (International Free Zone Authority)
+   • Custo anual: USD 12.500
+   • Setup: USD 20.000
+   • Atividades: Consultoria, Trading, Serviços Profissionais
+
+6. DMCC (Dubai Multi Commodities Centre)
+   • Custo anual: USD 12.000
+   • Setup: USD 20.000
+   • Atividades: Trading, Commodities, E-commerce
+
+7. ADGM (Abu Dhabi Global Market)
+   • Custo anual: USD 14.000
+   • Setup: USD 22.000
+   • Atividades: Serviços Financeiros, Tecnologia, Consultoria
+
+8. Meydan Free Zone
+   • Custo anual: USD 14.350
+   • Setup: USD 20.000
+   • Atividades: Consultoria, Mídia, Investimentos
+
+9. DIFC (Dubai International Financial Centre)
+   • Custo anual: USD 15.000
+   • Setup: USD 25.000
+   • Atividades: Serviços Financeiros, Fintech, Consultoria
+
+10. UAQ (UAQ Free Trade Zone)
+    • Custo anual: USD 15.000
+    • Setup: USD 15.000
+    • Atividades: Consultoria, Trading Geral
+
+11. Ajman Free Zone
+    • Custo anual: USD 16.000
+    • Setup: USD 15.000
+    • Atividades: PMEs, Trading
+
+12. RAKEZ (Ras Al Khaimah Economic Zone)
+    • Custo anual: USD 17.000
+    • Setup: USD 20.000
+    • Atividades: Industrial, Educacional, Trading
+
+13. Fujairah Free Zone
+    • Custo anual: USD 18.500
+    • Setup: USD 18.000
+    • Atividades: Logística, Trading
+
+14. SAIF (Sharjah Airport International)
+    • Custo anual: USD 19.000
+    • Setup: USD 22.000
+    • Atividades: Industrial, Logística
+
+15. Hamriyah Free Zone (Sharjah)
+    • Custo anual: USD 21.000
+    • Setup: USD 25.000
+    • Atividades: Industrial Pesada, Óleo e Gás
+
+VERSÃO ORIGINAL ADICIONAL (dados dos HTMLs):
+16. JAFZA (Jebel Ali Free Zone)
+    • Custo anual: USD 23.000
+    • Atividades: Logística, Manufatura, Trading
+
+17. DMCC (versão original)
+    • Custo anual: USD 25.000
+    • Atividades: Commodities, Cripto, Serviços
+
+18. DAFZA (versão original)
+    • Custo anual: USD 22.000
+    • Atividades: Aviação, Logística, Import/Export
+
+19. DIFC (versão original)
+    • Custo anual: USD 35.000
+    • Atividades: Serviços Financeiros, Fintech, Holdings
+
+================================================================================
+
+🏠 DADOS IMOBILIÁRIOS - YIELDS E PREÇOS POR EMIRADO
+================================================================================
+
+📍 DUBAI (Yield médio: 7,0% | Valorização: 8,0% ao ano)
+• Dubai Marina:        6,5% yield | USD 1.200/sqft
+• Business Bay:        7,0% yield | USD 1.100/sqft
+• Downtown Dubai:      5,5% yield | USD 1.500/sqft
+• JVC (Jumeirah Village Circle): 7,5% yield | USD 800/sqft
+• JLT (Jumeirah Lake Towers): 7,0% yield | USD 900/sqft
+• Palm Jumeirah:       5,0% yield | USD 2.000/sqft
+• Dubai Hills:         6,5% yield | USD 1.300/sqft
+• Arabian Ranches:     6,0% yield | USD 1.000/sqft
+• The Springs:         6,5% yield | USD 950/sqft
+• DAMAC Hills:         7,0% yield | USD 850/sqft
+
+📍 ABU DHABI (Yield médio: 6,0% | Valorização: 6,0% ao ano)
+• Al Reem Island:      6,0% yield | USD 900/sqft
+• Saadiyat Island:     5,5% yield | USD 1.200/sqft
+• Yas Island:          6,5% yield | USD 800/sqft
+• Al Raha Beach:       6,0% yield | USD 850/sqft
+
+📍 SHARJAH (Yield médio: 8,5% | Valorização: 7,0% ao ano)
+• Al Majaz:            8,5% yield | USD 600/sqft
+• Al Nahda:            9,0% yield | USD 500/sqft
+• Muwaileh:            8,0% yield | USD 550/sqft
+
+📍 AJMAN (Yield médio: 9,0% | Valorização: 7,5% ao ano)
+• Ajman Corniche:      9,0% yield | USD 450/sqft
+• Al Nuaimiya:         9,5% yield | USD 400/sqft
+
+📍 RAS AL KHAIMAH (Yield médio: 9,5% | Valorização: 8,0% ao ano)
+• Al Hamra:            9,5% yield | USD 500/sqft
+• Mina Al Arab:        10,0% yield | USD 450/sqft
+
+📍 FUJAIRAH (Yield médio: 8,5% | Valorização: 7,0% ao ano)
+• Fujairah Corniche:   8,5% yield | USD 400/sqft
+
+📍 UMM AL QUWAIN (Yield médio: 9,5% | Valorização: 7,5% ao ano)
+• UAQ Marina:          9,5% yield | USD 350/sqft
+
+================================================================================
+
+💰 CUSTO DE VIDA NOS UAE - PERFIS MENSAIS (USD)
+================================================================================
+
+👤 PROFISSIONAL SOLTEIRO - ECONÔMICO
+• Custo total mensal: USD 4.222
+  - Moradia:     USD 2.000 (47,4%)
+  - Utilidades:  USD 200 (4,7%)
+  - Transporte:  USD 300 (7,1%)
+  - Alimentação: USD 600 (14,2%)
+  - Saúde:       USD 150 (3,6%)
+  - Lazer:       USD 972 (23,0%)
+
+👤 PROFISSIONAL SOLTEIRO - PREMIUM
+• Custo total mensal: USD 8.500
+  - Moradia:     USD 4.500 (52,9%)
+  - Utilidades:  USD 300 (3,5%)
+  - Transporte:  USD 800 (9,4%)
+  - Alimentação: USD 1.200 (14,1%)
+  - Saúde:       USD 300 (3,5%)
+  - Lazer:       USD 1.400 (16,5%)
+
+👫 CASAL SEM FILHOS - ECONÔMICO
+• Custo total mensal: USD 6.800
+  - Moradia:     USD 3.000 (44,1%)
+  - Utilidades:  USD 250 (3,7%)
+  - Transporte:  USD 500 (7,4%)
+  - Alimentação: USD 1.000 (14,7%)
+  - Saúde:       USD 250 (3,7%)
+  - Lazer:       USD 1.800 (26,5%)
+
+👫 CASAL SEM FILHOS - MODERADO
+• Custo total mensal: USD 10.500
+  - Moradia:     USD 4.500 (42,9%)
+  - Utilidades:  USD 300 (2,9%)
+  - Transporte:  USD 800 (7,6%)
+  - Alimentação: USD 1.500 (14,3%)
+  - Saúde:       USD 400 (3,8%)
+  - Lazer:       USD 3.000 (28,6%)
+
+👫 CASAL SEM FILHOS - PREMIUM
+• Custo total mensal: USD 16.800
+  - Moradia:     USD 8.000 (47,6%)
+  - Utilidades:  USD 400 (2,4%)
+  - Transporte:  USD 1.500 (8,9%)
+  - Alimentação: USD 2.500 (14,9%)
+  - Saúde:       USD 600 (3,6%)
+  - Lazer:       USD 3.800 (22,6%)
+
+👨‍👩‍👧 FAMÍLIA COM 1 FILHO - MODERADO
+• Custo total mensal: USD 14.200
+  - Moradia:     USD 5.500 (38,7%)
+  - Utilidades:  USD 350 (2,5%)
+  - Transporte:  USD 800 (5,6%)
+  - Alimentação: USD 1.800 (12,7%)
+  - Educação:    USD 2.500 (17,6%)
+  - Saúde:       USD 500 (3,5%)
+  - Lazer:       USD 2.750 (19,4%)
+
+👨‍👩‍👧‍👦 FAMÍLIA COM 2 FILHOS - ECONÔMICO
+• Custo total mensal: USD 15.800
+  - Moradia:     USD 6.000 (38,0%)
+  - Utilidades:  USD 400 (2,5%)
+  - Transporte:  USD 800 (5,1%)
+  - Alimentação: USD 2.000 (12,7%)
+  - Educação:    USD 4.000 (25,3%)
+  - Saúde:       USD 600 (3,8%)
+  - Lazer:       USD 2.000 (12,7%)
+
+👨‍👩‍👧‍👦 FAMÍLIA COM 2 FILHOS - MODERADO
+• Custo total mensal: USD 22.500
+  - Moradia:     USD 8.000 (35,6%)
+  - Utilidades:  USD 450 (2,0%)
+  - Transporte:  USD 1.000 (4,4%)
+  - Alimentação: USD 2.500 (11,1%)
+  - Educação:    USD 6.000 (26,7%)
+  - Saúde:       USD 800 (3,6%)
+  - Lazer:       USD 3.750 (16,7%)
+
+👨‍👩‍👧‍👦 FAMÍLIA COM 2 FILHOS - PREMIUM
+• Custo total mensal: USD 32.500
+  - Moradia:     USD 12.000 (36,9%)
+  - Utilidades:  USD 500 (1,5%)
+  - Transporte:  USD 1.800 (5,5%)
+  - Alimentação: USD 3.500 (10,8%)
+  - Educação:    USD 8.000 (24,6%)
+  - Saúde:       USD 1.000 (3,1%)
+  - Lazer:       USD 5.700 (17,5%)
+
+👨‍👩‍👧‍👦‍👶 FAMÍLIA COM 3 FILHOS - PREMIUM
+• Custo total mensal: USD 37.842
+  - Moradia:     USD 15.000 (39,6%)
+  - Utilidades:  USD 600 (1,6%)
+  - Transporte:  USD 2.500 (6,6%)
+  - Alimentação: USD 4.000 (10,6%)
+  - Educação:    USD 10.000 (26,4%)
+  - Saúde:       USD 1.200 (3,2%)
+  - Lazer:       USD 4.542 (12,0%)
+
+================================================================================
+
+🛂 CUSTOS DE VISTOS E RESIDÊNCIA
+================================================================================
+
+🏆 GOLDEN VISA (10 anos)
+• Investimento mínimo: USD 544.600 (AED 2M)
+• Taxas governamentais: AED 10.000
+• Taxas Tarkia: USD 5.000
+• Visto familiar: USD 1.500
+• Requisitos:
+  - Investimento imobiliário mínimo AED 2M, OU
+  - Depósito bancário AED 2M, OU
+  - Empresa com capital AED 2M
+
+🏖️ RETIREMENT VISA (5 anos)
+• Investimento mínimo: USD 272.300 (AED 1M)
+• Taxas governamentais: AED 5.000
+• Taxas Tarkia: USD 3.000
+• Visto familiar: USD 1.200
+• Requisitos:
+  - Idade mínima 55 anos
+  - Investimento imobiliário AED 1M, OU
+  - Poupança AED 1M, OU
+  - Renda passiva AED 20k/mês
+
+🏠 PROPERTY INVESTOR (2 anos)
+• Investimento mínimo: USD 204.225 (AED 750k)
+• Taxas governamentais: AED 3.000
+• Taxas Tarkia: USD 2.500
+• Visto familiar: USD 1.000
+• Requisitos:
+  - Investimento imobiliário mínimo AED 750k
+  - Propriedade deve ser residencial
+  - Renovável a cada 2 anos
+
+💼 FREELANCER VISA (1 ano)
+• Custo total: USD 1.360
+• Taxas governamentais: AED 2.000
+• Taxas Tarkia: USD 1.000
+• Renovável anualmente
+
+🎓 STUDENT VISA (1 ano)
+• Custo total: USD 1.900
+• Taxas de universidade: USD 15.000-40.000/ano
+• Visto familiar: USD 800
+
+================================================================================
+
+💱 TAXAS DE CÂMBIO UTILIZADAS
+================================================================================
+
+• USD → AED: 3,67
+• USD → BRL: 5,20
+• USD → EUR: 0,85
+• AED → USD: 0,27
+• BRL → USD: 0,19
+• EUR → USD: 1,18
+
+================================================================================
+
+⚙️ CONFIGURAÇÕES DO SISTEMA
+================================================================================
+
+• Limite Corporate Tax UAE: USD 102.000
+• Taxa Corporate Tax UAE: 9,0% (acima do limite)
+• Moeda padrão: USD
+• Empresa: Tarkia Consultoria
+• Website: tarkia.ae
+• Email: contato@tarkia.ae
+
+================================================================================
+
+📊 SETORES DE NEGÓCIO SUPORTADOS
+================================================================================
+
+1. Consultoria - Serviços de consultoria empresarial e estratégica
+2. E-commerce - Comércio eletrônico e vendas online
+3. Trading - Compra e venda de commodities e produtos
+4. Serviços Digitais - Desenvolvimento de software e serviços digitais
+5. Holding - Empresa holding para participações societárias
+6. Manufatura - Produção industrial e manufatura
+7. Logística - Serviços de logística e transporte
+8. Educação - Serviços educacionais e treinamento
+9. Saúde - Serviços médicos e de saúde
+10. Marketing - Serviços de marketing e publicidade
+11. Fintech - Tecnologia financeira e soluções de pagamento
+12. Real Estate - Desenvolvimento e investimento imobiliário
+
+================================================================================
+
+📈 RESUMO DE VANTAGENS TRIBUTÁRIAS UAE vs BRASIL/PORTUGAL
+================================================================================
+
+EXEMPLO: Faturamento de USD 500.000/ano
+
+🇧🇷 BRASIL (Lucro Presumido):
+• Imposto: USD 56.650 (11,33%)
+• Dias de trabalho para impostos: 149 dias
+
+🇵🇹 PORTUGAL (IRC + Derramas):
+• Imposto: USD 157.500 (31,5%)
+• Dias de trabalho para impostos: 128 dias
+
+🇦🇪 UAE (Corporate Tax):
+• Imposto: USD 35.820 (7,16%)
+• Free Zone: USD 0 (0%)
+• Dias de trabalho para impostos: 15 dias
+
+💰 ECONOMIA ANUAL:
+• vs Brasil: USD 20.830 (Mainland) | USD 56.650 (Free Zone)
+• vs Portugal: USD 121.680 (Mainland) | USD 157.500 (Free Zone)
+
+================================================================================
+                           FIM DO RELATÓRIO
+================================================================================ 

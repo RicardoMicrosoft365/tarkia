@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Empresarial Tarkia | Análise Fiscal e ROI para Negócios nos UAE</title>
+    <meta name="description" content="Calculadora oficial Tarkia para análise fiscal empresarial. Compare impostos entre Brasil, Portugal e UAE. Dados oficiais DLD e Property Finder.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .data-sources {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 0.9em;
+        }
+        
+        .data-source {
+            background: rgba(255,255,255,0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #2a5298;
+            border-bottom: 3px solid #2a5298;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        
+        .results {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .result-value {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #2a5298;
+        }
+        
+        .savings {
+            color: #28a745;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .data-collection {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .data-collection h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .data-collection p {
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .footer {
+            background: #2a5298;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .footer p {
+            margin-bottom: 10px;
+        }
+        
+        .footer a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .data-sources {
+                font-size: 0.8em;
+            }
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2a5298;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                🏛️ Calculadora Tarkia UAE
+                <span style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.4em;">✅ Dados Oficiais</span>
+            </h1>
+            <p>Análise Fiscal e ROI para Negócios nos Emirados Árabes Unidos</p>
+            <div class="data-sources">
+                <div class="data-source">
+                    <span>📊</span> Dados oficiais do DLD (Dubai Land Department)
+                </div>
+                <div class="data-source">
+                    <span>🏠</span> Mo'asher Index
+                </div>
+                <div class="data-source">
+                    <span>🔍</span> Property Finder
+                </div>
+            </div>
+        </div>
+        
+        <!-- Coleta de Dados Obrigatória -->
+        <div class="data-collection">
+            <h3>📋 Informações de Contato (Obrigatório)</h3>
+            <p>Para acessar nossa calculadora premium com dados oficiais, precisamos de suas informações:</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="user-name">Nome Completo <span class="required">*</span></label>
+                    <input type="text" id="user-name" placeholder="Seu nome completo" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-email">Email <span class="required">*</span></label>
+                    <input type="email" id="user-email" placeholder="seu@email.com" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="user-phone">Telefone <span class="required">*</span></label>
+                    <input type="tel" id="user-phone" placeholder="+55 11 99999-9999" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-whatsapp">WhatsApp <span class="required">*</span></label>
+                    <input type="tel" id="user-whatsapp" placeholder="+55 11 99999-9999" required>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('empresarial')">
+                🏢 Empresarial
+            </button>
+            <button class="tab" onclick="showTab('imoveis')">
+                🏠 Imóveis
+            </button>
+            <button class="tab" onclick="showTab('custo-vida')">
+                👥 Custo de Vida
+            </button>
+            <button class="tab" onclick="showTab('vistos')">
+                📋 Vistos & Residência
+            </button>
+            <button class="tab" onclick="showTab('planejamento')">
+                🎯 Planejamento 360°
+            </button>
+        </div>
+        
+        <div class="content">
+            <!-- Tab Empresarial -->
+            <div id="empresarial" class="tab-content active">
+                <h2>🏢 Calculadora de Economia Fiscal Empresarial</h2>
+                <p>Compare a economia fiscal entre Brasil, Portugal e UAE com dados oficiais</p>
+                
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label for="faturamento">Faturamento Anual (USD)</label>
+                        <input type="number" id="faturamento" placeholder="1000000" min="0" step="1000">
+                    </div>
+                    <div class="form-group">
+                        <label for="setor">Tipo de Negócio</label>
+                        <select id="setor">
+                            <option value="ecommerce">E-commerce</option>
+                            <option value="technology">Tecnologia</option>
+                            <option value="commodities">Commodities</option>
+                            <option value="services">Serviços Digitais</option>
+                            <option value="consultoria">Consultoria</option>
+                            <option value="trading">Trading/Investimentos</option>
+                            <option value="manufatura">Manufatura</option>
+                            <option value="blockchain">Blockchain/Crypto/Games</option>
+                            <option value="fintech">Fintechs</option>
+                            <option value="logistics">Logística</option>
+                            <option value="geral">Geral</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="comparar-com">Comparar com</label>
+                        <select id="comparar-com">
+                            <option value="brazil">Brasil</option>
+                            <option value="portugal">Portugal</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="calcularEconomiaFiscal()">
+                    📊 Calcular Economia Fiscal
+                </button>
+                
+                <div class="loading" id="loading-empresarial">
+                    <div class="spinner"></div>
+                    <p>Calculando economia fiscal com dados oficiais...</p>
+                </div>
+                
+                <div class="results" id="results-empresarial">
+                    <h3>📈 Resultados da Análise Fiscal</h3>
+                    <div id="fiscal-results"></div>
+                    <button class="btn btn-secondary" onclick="gerarPDFEmpresarial()">
+                        📄 Download Relatório PDF
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tab Imóveis -->
+            <div id="imoveis" class="tab-content">
+                <h2>🏠 Calculadora de ROI Imobiliário</h2>
+                <p>Análise de retorno sobre investimento imobiliário nos UAE com dados DLD oficiais</p>
+                
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label for="emirado">Emirado</label>
+                        <select id="emirado" onchange="updateAreas()">
+                            <option value="dubai">Dubai</option>
+                            <option value="abu_dhabi">Abu Dhabi</option>
+                            <option value="sharjah">Sharjah</option>
+                            <option value="ajman">Ajman</option>
+                            <option value="ras_al_khaimah">Ras Al Khaimah</option>
+                            <option value="fujairah">Fujairah</option>
+                            <option value="umm_al_quwain">Umm Al Quwain</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="area">Área</label>
+                        <select id="area">
+                            <option value="dubai_marina">Dubai Marina</option>
+                            <option value="business_bay">Business Bay</option>
+                            <option value="downtown_dubai">Downtown Dubai</option>
+                            <option value="jvc">JVC</option>
+                            <option value="jlt">JLT</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="investimento">Valor do Investimento (USD)</label>
+                        <input type="number" id="investimento" placeholder="500000" min="0" step="1000">
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="calcularROIImobiliario()">
+                    🏠 Calcular ROI Imobiliário
+                </button>
+                
+                <div class="loading" id="loading-imoveis">
+                    <div class="spinner"></div>
+                    <p>Analisando dados DLD e Property Finder...</p>
+                </div>
+                
+                <div class="results" id="results-imoveis">
+                    <h3>📊 Análise de ROI Imobiliário</h3>
+                    <div id="roi-results"></div>
+                    <button class="btn btn-secondary" onclick="gerarPDFImoveis()">
+                        📄 Download Relatório PDF
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tab Custo de Vida -->
+            <div id="custo-vida" class="tab-content">
+                <h2>👥 Calculadora de Custo de Vida</h2>
+                <p>Estime seu custo de vida nos UAE baseado em 10 perfis familiares detalhados</p>
+                
+                <div class="form-group">
+                    <label for="perfil-familiar">Perfil Familiar</label>
+                    <select id="perfil-familiar">
+                        <option value="single_professional_economic">Profissional Solteiro - Econômico</option>
+                        <option value="single_professional_premium">Profissional Solteiro - Premium</option>
+                        <option value="couple_no_kids_economic">Casal Sem Filhos - Econômico</option>
+                        <option value="couple_no_kids_moderate">Casal Sem Filhos - Moderado</option>
+                        <option value="couple_no_kids_premium">Casal Sem Filhos - Premium</option>
+                        <option value="family_1_child_moderate">Família com 1 filho - Moderado</option>
+                        <option value="family_2_kids_economic">Família com 2 filhos - Econômico</option>
+                        <option value="family_2_kids_moderate">Família com 2 filhos - Moderado</option>
+                        <option value="family_2_kids_premium">Família com 2 filhos - Premium</option>
+                        <option value="family_3_kids_premium">Família com 3 filhos - Premium</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="calcularCustoVida()">
+                    👥 Calcular Custo de Vida
+                </button>
+                
+                <div class="loading" id="loading-custo">
+                    <div class="spinner"></div>
+                    <p>Calculando custo de vida detalhado...</p>
+                </div>
+                
+                <div class="results" id="results-custo">
+                    <h3>💰 Análise de Custo de Vida</h3>
+                    <div id="custo-results"></div>
+                    <button class="btn btn-secondary" onclick="gerarPDFCusto()">
+                        📄 Download Relatório PDF
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tab Vistos -->
+            <div id="vistos" class="tab-content">
+                <h2>📋 Calculadora de Vistos & Residência</h2>
+                <p>Analise custos e requisitos para diferentes tipos de vistos nos UAE</p>
+                
+                <div class="form-group">
+                    <label for="tipo-visto">Tipo de Visto</label>
+                    <select id="tipo-visto">
+                        <option value="golden_visa">Golden Visa (10 anos)</option>
+                        <option value="retirement_visa">Retirement Visa (5 anos)</option>
+                        <option value="property_investor">Property Investor (2 anos)</option>
+                        <option value="green_visa">Green Visa (5 anos)</option>
+                        <option value="employee_visa">Employee Visa (2 anos)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="visas-familiares">Número de Visas Familiares</label>
+                    <input type="number" id="visas-familiares" placeholder="2" min="0" max="10">
+                </div>
+                
+                <button class="btn" onclick="calcularVistos()">
+                    📋 Calcular Custos de Vistos
+                </button>
+                
+                <div class="loading" id="loading-vistos">
+                    <div class="spinner"></div>
+                    <p>Analisando requisitos e custos de vistos...</p>
+                </div>
+                
+                <div class="results" id="results-vistos">
+                    <h3>📄 Análise de Vistos</h3>
+                    <div id="vistos-results"></div>
+                    <button class="btn btn-secondary" onclick="gerarPDFVistos()">
+                        📄 Download Relatório PDF
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tab Planejamento 360° -->
+            <div id="planejamento" class="tab-content">
+                <h2>🎯 Planejamento 360° Completo</h2>
+                <p>Análise integrada combinando todos os aspectos: fiscal, imobiliário, custo de vida e vistos</p>
+                
+                <div class="alert alert-info">
+                    <strong>💡 Análise Completa:</strong> Esta seção combina todos os cálculos anteriores para fornecer uma visão 360° do seu planejamento nos UAE.
+                </div>
+                
+                <button class="btn" onclick="calcularPlanejamento360()">
+                    🎯 Gerar Planejamento 360°
+                </button>
+                
+                <div class="loading" id="loading-planejamento">
+                    <div class="spinner"></div>
+                    <p>Gerando análise completa 360°...</p>
+                </div>
+                
+                <div class="results" id="results-planejamento">
+                    <h3>🎯 Planejamento 360° Completo</h3>
+                    <div id="planejamento-results"></div>
+                    <button class="btn btn-secondary" onclick="gerarPDFCompleto()">
+                        📄 Download Relatório Completo PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Tarkia</strong> - Consultoria especializada em planejamento tributário internacional</p>
+            <p>Dados oficiais do DLD (Dubai Land Department) • Mo'asher Index • Property Finder</p>
+            <p><a href="https://tarkia.ae">tarkia.ae</a> | <a href="mailto:contato@tarkia.ae">contato@tarkia.ae</a></p>
+            <p style="font-size: 0.9em; opacity: 0.8;">© 2025 Tarkia. Todos os direitos reservados.</p>
+        </div>
+    </div>
+
+    <!-- Incluir configuração de dados -->
+    <script src="tarkia_config.js"></script>
+    
+    <!-- Incluir jsPDF para geração de PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Incluir sistema de geração de PDF -->
+    <script src="pdf_generator.js"></script>
+    
+    <script>
+        // Variáveis globais para armazenar resultados
+        let resultadosEmpresarial = null;
+        let resultadosImoveis = null;
+        let resultadosCusto = null;
+        let resultadosVistos = null;
+        
+        // Função para mostrar/esconder abas
+        function showTab(tabName) {
+            // Esconder todas as abas
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // Remover classe active de todas as abas
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Mostrar aba selecionada
+            document.getElementById(tabName).classList.add('active');
+            
+            // Adicionar classe active à aba clicada
+            event.target.classList.add('active');
+        }
+        
+        // Validação de dados obrigatórios
+        function validarDadosObrigatorios() {
+            const nome = document.getElementById('user-name').value.trim();
+            const email = document.getElementById('user-email').value.trim();
+            const telefone = document.getElementById('user-phone').value.trim();
+            const whatsapp = document.getElementById('user-whatsapp').value.trim();
+            
+            if (!nome || !email || !telefone || !whatsapp) {
+                alert('⚠️ Por favor, preencha todos os campos obrigatórios de contato antes de usar a calculadora.');
+                return false;
+            }
+            
+            // Validação básica de email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('⚠️ Por favor, insira um email válido.');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Função para mostrar loading
+        function showLoading(tabName) {
+            document.getElementById(`loading-${tabName}`).classList.add('show');
+            document.getElementById(`results-${tabName}`).classList.remove('show');
+        }
+        
+        // Função para esconder loading
+        function hideLoading(tabName) {
+            document.getElementById(`loading-${tabName}`).classList.remove('show');
+        }
+        
+        // Função para mostrar resultados
+        function showResults(tabName) {
+            document.getElementById(`results-${tabName}`).classList.add('show');
+        }
+        
+        // Calcular Economia Fiscal
+        function calcularEconomiaFiscal() {
+            if (!validarDadosObrigatorios()) return;
+            
+            showLoading('empresarial');
+            
+            // Simular processamento
+            setTimeout(() => {
+                const faturamento = parseFloat(document.getElementById('faturamento').value) || 1000000;
+                const setor = document.getElementById('setor').value;
+                const compararCom = document.getElementById('comparar-com').value;
+                
+                // Obter dados de impostos
+                const taxaBrasil = getTaxRate('brazil', 'simples_nacional', '0-180000') || 0.06;
+                const taxaPortugal = getTaxRate('portugal', 'irc', 'effective_rate') || 0.315;
+                const taxaUAE = getTaxRate('uae', 'corporate_tax', 'rate_above_threshold') || 0.09;
+                
+                // Calcular impostos
+                const impostoOrigem = compararCom === 'brazil' ? faturamento * taxaBrasil : faturamento * taxaPortugal;
+                const impostoUAE = faturamento > 102000 ? (faturamento - 102000) * taxaUAE : 0;
+                const economia = impostoOrigem - impostoUAE;
+                const percentualEconomia = (economia / impostoOrigem) * 100;
+                
+                // Dias trabalhados para impostos
+                const diasOrigem = compararCom === 'brazil' ? 149 : 128;
+                const diasUAE = 15;
+                const diasEconomizados = diasOrigem - diasUAE;
+                
+                resultadosEmpresarial = {
+                    faturamento,
+                    setor,
+                    compararCom,
+                    impostoOrigem,
+                    impostoUAE,
+                    economia,
+                    percentualEconomia,
+                    diasOrigem,
+                    diasUAE,
+                    diasEconomizados
+                };
+                
+                const resultsHTML = `
+                    <div class="result-item">
+                        <span class="result-label">Faturamento Anual:</span>
+                        <span class="result-value">$${faturamento.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Imposto ${compararCom === 'brazil' ? 'Brasil' : 'Portugal'}:</span>
+                        <span class="result-value">$${impostoOrigem.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Imposto UAE:</span>
+                        <span class="result-value">$${impostoUAE.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Economia Anual:</span>
+                        <span class="result-value savings">$${economia.toLocaleString()} (${percentualEconomia.toFixed(1)}%)</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Dias trabalhados para impostos:</span>
+                        <span class="result-value">${diasOrigem} → ${diasUAE} dias (${diasEconomizados} dias a menos)</span>
+                    </div>
+                `;
+                
+                document.getElementById('fiscal-results').innerHTML = resultsHTML;
+                hideLoading('empresarial');
+                showResults('empresarial');
+            }, 2000);
+        }
+        
+        // Atualizar áreas baseado no emirado
+        function updateAreas() {
+            const emirado = document.getElementById('emirado').value;
+            const areaSelect = document.getElementById('area');
+            
+            // Limpar opções atuais
+            areaSelect.innerHTML = '';
+            
+            // Obter áreas do emirado selecionado
+            const emirateData = TARKIA_CONFIG.realEstate.emirates[emirado];
+            if (emirateData && emirateData.areas) {
+                Object.keys(emirateData.areas).forEach(areaKey => {
+                    const area = emirateData.areas[areaKey];
+                    const option = document.createElement('option');
+                    option.value = areaKey;
+                    option.textContent = areaKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    areaSelect.appendChild(option);
+                });
+            }
+        }
+        
+        // Calcular ROI Imobiliário
+        function calcularROIImobiliario() {
+            if (!validarDadosObrigatorios()) return;
+            
+            showLoading('imoveis');
+            
+            setTimeout(() => {
+                const emirado = document.getElementById('emirado').value;
+                const area = document.getElementById('area').value;
+                const investimento = parseFloat(document.getElementById('investimento').value) || 500000;
+                
+                // Obter yield da área
+                const yield = getRealEstateYield(emirado, area) || 0.07;
+                const rendaAnual = investimento * yield;
+                const rendaMensal = rendaAnual / 12;
+                
+                // Calcular ROI em 5 e 10 anos
+                const roi5anos = rendaAnual * 5;
+                const roi10anos = rendaAnual * 10;
+                const payback = 1 / yield;
+                
+                resultadosImoveis = {
+                    emirado,
+                    area,
+                    investimento,
+                    yield,
+                    rendaAnual,
+                    rendaMensal,
+                    roi5anos,
+                    roi10anos,
+                    payback
+                };
+                
+                const resultsHTML = `
+                    <div class="result-item">
+                        <span class="result-label">Investimento:</span>
+                        <span class="result-value">$${investimento.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Localização:</span>
+                        <span class="result-value">${area.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}, ${emirado.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Yield Anual:</span>
+                        <span class="result-value">${(yield * 100).toFixed(1)}%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Renda Mensal:</span>
+                        <span class="result-value savings">$${rendaMensal.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Renda Anual:</span>
+                        <span class="result-value savings">$${rendaAnual.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">ROI em 5 anos:</span>
+                        <span class="result-value">$${roi5anos.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Payback:</span>
+                        <span class="result-value">${payback.toFixed(1)} anos</span>
+                    </div>
+                `;
+                
+                document.getElementById('roi-results').innerHTML = resultsHTML;
+                hideLoading('imoveis');
+                showResults('imoveis');
+            }, 2000);
+        }
+        
+        // Calcular Custo de Vida
+        function calcularCustoVida() {
+            if (!validarDadosObrigatorios()) return;
+            
+            showLoading('custo');
+            
+            setTimeout(() => {
+                const perfil = document.getElementById('perfil-familiar').value;
+                const custoData = getCostOfLiving(perfil);
+                
+                if (!custoData) {
+                    alert('Erro ao carregar dados de custo de vida');
+                    hideLoading('custo');
+                    return;
+                }
+                
+                resultadosCusto = {
+                    perfil,
+                    custoData
+                };
+                
+                let breakdownHTML = '';
+                Object.keys(custoData.breakdown).forEach(category => {
+                    const categoryName = category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    const value = custoData.breakdown[category];
+                    breakdownHTML += `
+                        <div class="result-item">
+                            <span class="result-label">${categoryName}:</span>
+                            <span class="result-value">$${value.toLocaleString()}/mês</span>
+                        </div>
+                    `;
+                });
+                
+                const resultsHTML = `
+                    <div class="result-item">
+                        <span class="result-label">Perfil:</span>
+                        <span class="result-value">${custoData.name}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Custo Total Mensal:</span>
+                        <span class="result-value savings">$${custoData.monthly_cost_usd.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Custo Total Anual:</span>
+                        <span class="result-value">$${(custoData.monthly_cost_usd * 12).toLocaleString()}</span>
+                    </div>
+                    <h4 style="margin: 20px 0 10px 0;">Detalhamento por Categoria:</h4>
+                    ${breakdownHTML}
+                `;
+                
+                document.getElementById('custo-results').innerHTML = resultsHTML;
+                hideLoading('custo');
+                showResults('custo');
+            }, 1500);
+        }
+        
+        // Calcular Vistos
+        function calcularVistos() {
+            if (!validarDadosObrigatorios()) return;
+            
+            showLoading('vistos');
+            
+            setTimeout(() => {
+                const tipoVisto = document.getElementById('tipo-visto').value;
+                const visasFamiliares = parseInt(document.getElementById('visas-familiares').value) || 0;
+                const vistoData = getVisaInfo(tipoVisto);
+                
+                if (!vistoData) {
+                    alert('Erro ao carregar dados de visto');
+                    hideLoading('vistos');
+                    return;
+                }
+                
+                const custoFamiliar = visasFamiliares * vistoData.family_visa_cost_usd;
+                const custoTotal = vistoData.tarkia_fees_usd + custoFamiliar;
+                const investimentoMinimo = vistoData.minimum_investment_usd || 0;
+                
+                resultadosVistos = {
+                    tipoVisto,
+                    visasFamiliares,
+                    vistoData,
+                    custoFamiliar,
+                    custoTotal,
+                    investimentoMinimo
+                };
+                
+                let requirementsHTML = '';
+                vistoData.requirements.forEach(req => {
+                    requirementsHTML += `<li>${req}</li>`;
+                });
+                
+                const resultsHTML = `
+                    <div class="result-item">
+                        <span class="result-label">Tipo de Visto:</span>
+                        <span class="result-value">${vistoData.name}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Duração:</span>
+                        <span class="result-value">${vistoData.duration_years} anos</span>
+                    </div>
+                    ${investimentoMinimo > 0 ? `
+                    <div class="result-item">
+                        <span class="result-label">Investimento Mínimo:</span>
+                        <span class="result-value">$${investimentoMinimo.toLocaleString()}</span>
+                    </div>
+                    ` : ''}
+                    <div class="result-item">
+                        <span class="result-label">Taxas Governamentais:</span>
+                        <span class="result-value">AED ${vistoData.government_fees_aed.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Taxas Tarkia:</span>
+                        <span class="result-value">$${vistoData.tarkia_fees_usd.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Visas Familiares (${visasFamiliares}):</span>
+                        <span class="result-value">$${custoFamiliar.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Custo Total:</span>
+                        <span class="result-value savings">$${custoTotal.toLocaleString()}</span>
+                    </div>
+                    <h4 style="margin: 20px 0 10px 0;">Requisitos:</h4>
+                    <ul style="margin-left: 20px;">${requirementsHTML}</ul>
+                `;
+                
+                document.getElementById('vistos-results').innerHTML = resultsHTML;
+                hideLoading('vistos');
+                showResults('vistos');
+            }, 1500);
+        }
+        
+        // Calcular Planejamento 360°
+        function calcularPlanejamento360() {
+            if (!validarDadosObrigatorios()) return;
+            
+            // Verificar se há dados de outras abas
+            if (!resultadosEmpresarial || !resultadosImoveis || !resultadosCusto || !resultadosVistos) {
+                alert('⚠️ Para gerar o planejamento 360°, primeiro calcule os dados nas outras abas: Empresarial, Imóveis, Custo de Vida e Vistos.');
+                return;
+            }
+            
+            showLoading('planejamento');
+            
+            setTimeout(() => {
+                // Calcular economia total anual
+                const economiaFiscal = resultadosEmpresarial.economia;
+                const rendaImobiliaria = resultadosImoveis.rendaAnual;
+                const custoVidaAnual = resultadosCusto.custoData.monthly_cost_usd * 12;
+                const investimentoVisto = resultadosVistos.investimentoMinimo;
+                const investimentoImobiliario = resultadosImoveis.investimento;
+                
+                const receitaTotal = economiaFiscal + rendaImobiliaria;
+                const lucroLiquido = receitaTotal - custoVidaAnual;
+                const investimentoTotal = investimentoVisto + investimentoImobiliario;
+                const roiTotal = investimentoTotal > 0 ? (lucroLiquido / investimentoTotal) * 100 : 0;
+                const paybackTotal = investimentoTotal > 0 ? investimentoTotal / lucroLiquido : 0;
+                
+                const resultsHTML = `
+                    <div class="alert alert-info">
+                        <strong>🎯 Análise Integrada Completa</strong><br>
+                        Combinando economia fiscal, renda imobiliária, custo de vida e requisitos de visto.
+                    </div>
+                    
+                    <h4>💰 Receitas Anuais</h4>
+                    <div class="result-item">
+                        <span class="result-label">Economia Fiscal:</span>
+                        <span class="result-value savings">$${economiaFiscal.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Renda Imobiliária:</span>
+                        <span class="result-value savings">$${rendaImobiliaria.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Total de Receitas:</span>
+                        <span class="result-value savings">$${receitaTotal.toLocaleString()}</span>
+                    </div>
+                    
+                    <h4>💸 Custos Anuais</h4>
+                    <div class="result-item">
+                        <span class="result-label">Custo de Vida:</span>
+                        <span class="result-value">$${custoVidaAnual.toLocaleString()}</span>
+                    </div>
+                    
+                    <h4>📊 Resultado Líquido</h4>
+                    <div class="result-item">
+                        <span class="result-label">Lucro Líquido Anual:</span>
+                        <span class="result-value savings">$${lucroLiquido.toLocaleString()}</span>
+                    </div>
+                    
+                    <h4>🏗️ Investimentos Necessários</h4>
+                    <div class="result-item">
+                        <span class="result-label">Investimento Visto:</span>
+                        <span class="result-value">$${investimentoVisto.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Investimento Imobiliário:</span>
+                        <span class="result-value">$${investimentoImobiliario.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Investimento Total:</span>
+                        <span class="result-value">$${investimentoTotal.toLocaleString()}</span>
+                    </div>
+                    
+                    <h4>📈 ROI e Payback</h4>
+                    <div class="result-item">
+                        <span class="result-label">ROI Anual:</span>
+                        <span class="result-value savings">${roiTotal.toFixed(1)}%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Payback:</span>
+                        <span class="result-value">${paybackTotal.toFixed(1)} anos</span>
+                    </div>
+                    
+                    <div class="alert alert-info" style="margin-top: 20px;">
+                        <strong>💡 Recomendação:</strong> 
+                        ${roiTotal > 15 ? 'Excelente oportunidade! ROI acima de 15% ao ano.' : 
+                          roiTotal > 10 ? 'Boa oportunidade de investimento com ROI sólido.' : 
+                          'Considere ajustar o planejamento para melhorar o ROI.'}
+                    </div>
+                `;
+                
+                document.getElementById('planejamento-results').innerHTML = resultsHTML;
+                hideLoading('planejamento');
+                showResults('planejamento');
+            }, 2500);
+        }
+        
+        // Funções de geração de PDF (implementadas em pdf_generator.js)
+        function gerarPDFCusto() {
+            if (!resultadosCusto) {
+                alert('⚠️ Primeiro calcule o custo de vida para gerar o relatório.');
+                return;
+            }
+            // Implementar geração de PDF para custo de vida
+            alert('📄 Gerando relatório PDF de custo de vida... (Em desenvolvimento)');
+        }
+        
+        function gerarPDFVistos() {
+            if (!resultadosVistos) {
+                alert('⚠️ Primeiro calcule os custos de vistos para gerar o relatório.');
+                return;
+            }
+            // Implementar geração de PDF para vistos
+            alert('📄 Gerando relatório PDF de vistos... (Em desenvolvimento)');
+        }
+        
+        // Inicializar áreas ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAreas();
+        });
+    </script>
+</body>
+</html>
+

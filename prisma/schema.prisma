@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// Países e regimes tributários
+model Country {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique // BR, PT, AE
+  currency    String   // BRL, EUR, AED
+  workingDaysForTaxes Int
+  taxPercentageOfYear Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  taxRegimes TaxRegime[]
+  calculations Calculation[]
+
+  @@map("countries")
+}
+
+// Regimes tributários por país
+model TaxRegime {
+  id          String   @id @default(cuid())
+  name        String
+  countryId   String
+  description String?
+  baseRate    Float    // Taxa base do regime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  country    Country      @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  taxBrackets TaxBracket[]
+
+  @@map("tax_regimes")
+}
+
+// Faixas de tributação dentro de um regime
+model TaxBracket {
+  id           String   @id @default(cuid())
+  taxRegimeId  String
+  minIncome    Float
+  maxIncome    Float?   // null = sem limite superior
+  rate         Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  taxRegime TaxRegime @relation(fields: [taxRegimeId], references: [id], onDelete: Cascade)
+
+  @@map("tax_brackets")
+}
+
+// Free Zones dos UAE
+model FreeZone {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  emirate     String
+  annualCost  Float
+  setupCost   Float?
+  description String?
+  benefits    String?  // JSON string com benefícios
+  sectors     String?  // JSON string com setores permitidos
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  calculations Calculation[]
+
+  @@map("free_zones")
+}
+
+// Emirados e dados imobiliários
+model Emirate {
+  id                String   @id @default(cuid())
+  name              String   @unique
+  code              String   @unique
+  averageYield      Float
+  appreciationRate  Float
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  areas RealEstateArea[]
+
+  @@map("emirates")
+}
+
+// Áreas imobiliárias dentro dos emirados
+model RealEstateArea {
+  id              String   @id @default(cuid())
+  name            String
+  emirateId       String
+  yield           Float
+  avgPriceSqft    Float
+  description     String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  emirate Emirate @relation(fields: [emirateId], references: [id], onDelete: Cascade)
+
+  @@map("real_estate_areas")
+}
+
+// Tipos de negócio/setores
+model BusinessSector {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  calculations Calculation[]
+
+  @@map("business_sectors")
+}
+
+// Perfis de custo de vida
+model CostOfLivingProfile {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  data        String   // JSON com custos detalhados
+  countryCode String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("cost_of_living_profiles")
+}
+
+// Leads capturados pela calculadora
+model Lead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  whatsapp  String?
+  source    String   @default("calculator") // calculator, admin, etc
+  status    String   @default("new") // new, contacted, qualified, converted
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  calculations Calculation[]
+
+  @@map("leads")
+}
+
+// Cálculos realizados
+model Calculation {
+  id                String   @id @default(cuid())
+  leadId            String?
+  countryId         String?
+  freeZoneId        String?
+  businessSectorId  String?
+  calculationType   String   // empresarial, imoveis, custo_vida
+  annualRevenue     Float?
+  investmentAmount  Float?
+  results           String   // JSON com resultados do cálculo
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  lead           Lead?           @relation(fields: [leadId], references: [id])
+  country        Country?        @relation(fields: [countryId], references: [id])
+  freeZone       FreeZone?       @relation(fields: [freeZoneId], references: [id])
+  businessSector BusinessSector? @relation(fields: [businessSectorId], references: [id])
+
+  @@map("calculations")
+}
+
+// Taxa de câmbio
+model ExchangeRate {
+  id        String   @id @default(cuid())
+  fromCurrency String
+  toCurrency   String
+  rate         Float
+  date         DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([fromCurrency, toCurrency, date])
+  @@map("exchange_rates")
+}
+
+// Configurações gerais do sistema
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      String   @default("string") // string, number, boolean, json
+  description String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_config")
+} 
