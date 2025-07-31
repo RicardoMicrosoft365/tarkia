@@ -20,9 +20,13 @@ import PlanningCalculator from './calculators/PlanningCalculator'
 
 type Tab = 'business' | 'realestate' | 'costofliving' | 'visa' | 'planning'
 
+type CalculationsData = {
+  [key in Tab]?: any
+}
+
 export default function TarkiaCalculator() {
   const [activeTab, setActiveTab] = useState<Tab>('business')
-  const [calculations, setCalculations] = useState<any>({})
+  const [calculations, setCalculations] = useState<CalculationsData>({})
 
   const tabs = [
     {
@@ -58,7 +62,7 @@ export default function TarkiaCalculator() {
   ]
 
   const handleCalculationUpdate = (tabId: Tab, data: any) => {
-    setCalculations(prev => ({
+    setCalculations((prev: CalculationsData) => ({
       ...prev,
       [tabId]: data
     }))

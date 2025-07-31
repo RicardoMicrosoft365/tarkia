@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react'
 import { Calculator, TrendingUp, DollarSign, Building2 } from 'lucide-react'
 
+type CountryKey = 'brasil' | 'portugal'
+type FreeZoneKey = 'DIFC' | 'DMCC' | 'ADGM' | 'DAFZ' | 'SHAMS'
+
 interface BusinessCalculatorProps {
   onCalculationUpdate: (data: any) => void
 }
@@ -64,11 +67,11 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
       const { annualRevenue, comparisonCountry, freeZone } = formData
       
       // Tax no país de comparação
-      const countryData = countries[comparisonCountry]
+      const countryData = countries[comparisonCountry as CountryKey]
       const originalTax = annualRevenue * countryData.taxRate
       
       // Custos nos UAE (baseado no projeto original)
-      const freeZoneData = freeZones[freeZone]
+      const freeZoneData = freeZones[freeZone as FreeZoneKey]
       const uaeThreshold = 102000 // USD threshold para corporate tax
       const uaeTaxRate = 0.09
       
