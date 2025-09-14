@@ -54,6 +54,12 @@ export default function CostOfLivingCalculator({ onCalculationUpdate }: CostOfLi
     brasil: { 
       name: 'Brasil', 
       currency: 'BRL',
+      cities: {
+        sao_paulo: { name: 'São Paulo', multiplier: 1.0 },
+        rio_janeiro: { name: 'Rio de Janeiro', multiplier: 0.9 },
+        brasilia: { name: 'Brasília', multiplier: 0.95 },
+        belo_horizonte: { name: 'Belo Horizonte', multiplier: 0.8 }
+      },
       baseCosts: {
         housing: 800,
         transportation: 300,
@@ -66,6 +72,12 @@ export default function CostOfLivingCalculator({ onCalculationUpdate }: CostOfLi
     portugal: { 
       name: 'Portugal', 
       currency: 'EUR',
+      cities: {
+        lisboa: { name: 'Lisboa', multiplier: 1.0 },
+        porto: { name: 'Porto', multiplier: 0.8 },
+        coimbra: { name: 'Coimbra', multiplier: 0.7 },
+        braga: { name: 'Braga', multiplier: 0.75 }
+      },
       baseCosts: {
         housing: 1200,
         transportation: 400,
@@ -78,6 +90,12 @@ export default function CostOfLivingCalculator({ onCalculationUpdate }: CostOfLi
     uae: { 
       name: 'UAE', 
       currency: 'AED',
+      cities: {
+        dubai: { name: 'Dubai', multiplier: 1.0 },
+        abu_dhabi: { name: 'Abu Dhabi', multiplier: 0.9 },
+        sharjah: { name: 'Sharjah', multiplier: 0.7 },
+        ajman: { name: 'Ajman', multiplier: 0.6 }
+      },
       baseCosts: {
         housing: 2000,
         transportation: 600,
@@ -262,10 +280,10 @@ export default function CostOfLivingCalculator({ onCalculationUpdate }: CostOfLi
                 onChange={(e) => handleInputChange('city', e.target.value)}
                 className="input-field"
               >
-                {countries[formData.country as CountryKey]?.cities ? 
-                  Object.entries(countries[formData.country as CountryKey].cities).map(([key, city]) => (
+                {(countries as any)[formData.country]?.cities ? 
+                  Object.entries((countries as any)[formData.country].cities).map(([key, city]) => (
                     <option key={key} value={key}>
-                      {city.name}
+                      {(city as any).name}
                     </option>
                   )) : null
                 }
