@@ -13,9 +13,11 @@ import {
   RefreshCw,
   LogOut,
   Eye,
-  Edit3
+  Edit3,
+  Users
 } from 'lucide-react'
 import { useCalculatorConfig } from '@/hooks/useCalculatorConfig'
+import LeadsManager from '@/components/admin/LeadsManager'
 
 interface CalculatorConfig {
   // Business Calculator
@@ -212,7 +214,8 @@ export default function AdminDashboard() {
                 { id: 'realEstate', name: 'Imóveis', icon: Building },
                 { id: 'costOfLiving', name: 'Custo de Vida', icon: ShoppingCart },
                 { id: 'visa', name: 'Vistos', icon: Plane },
-                { id: 'planning', name: 'Planejamento', icon: Compass }
+                { id: 'planning', name: 'Planejamento', icon: Compass },
+                { id: 'leads', name: 'Leads', icon: Users }
               ].map((tab) => {
                 const Icon = tab.icon
                 return (
@@ -274,6 +277,9 @@ export default function AdminDashboard() {
               )}
               {activeTab === 'planning' && (
                 <PlanningConfigTab />
+              )}
+              {activeTab === 'leads' && (
+                <LeadsManager />
               )}
             </div>
           )}
