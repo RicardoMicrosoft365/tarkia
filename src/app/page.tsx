@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Calculator, TrendingUp, Building, Plane, Users, ArrowRight, Lock, Unlock } from 'lucide-react'
+import { Calculator, TrendingUp, Building, Plane, Users, ArrowRight, Lock, Unlock, Settings } from 'lucide-react'
 import LeadCaptureForm from '@/components/LeadCaptureForm'
 import TarkiaCalculator from '@/components/TarkiaCalculator'
+import Link from 'next/link'
 
 export default function HomePage() {
   const [isUnlocked, setIsUnlocked] = useState(false)
@@ -15,6 +16,17 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
+      {/* Admin Link - Discreto */}
+      <div className="fixed top-4 right-4 z-50">
+        <Link 
+          href="/admin/login"
+          className="bg-gray-800 bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-lg transition-all duration-200"
+          title="Painel Administrativo"
+        >
+          <Settings className="w-5 h-5" />
+        </Link>
+      </div>
+
       {/* Hero Section */}
       <section className="hero-section text-white py-20 px-4 relative z-10">
         <div className="container mx-auto max-w-6xl text-center">
