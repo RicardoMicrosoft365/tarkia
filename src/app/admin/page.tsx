@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { 
   Settings, 
   Save, 
@@ -11,7 +12,8 @@ import {
   AlertCircle,
   CheckCircle,
   DollarSign,
-  Percent
+  Percent,
+  ArrowRight
 } from 'lucide-react'
 
 interface TaxBracket {
@@ -40,6 +42,7 @@ interface FreeZone {
 }
 
 export default function AdminPage() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState<'countries' | 'brackets' | 'freezones' | 'config'>('countries')
   const [countries, setCountries] = useState<Country[]>([])
   const [taxBrackets, setTaxBrackets] = useState<TaxBracket[]>([])
@@ -52,9 +55,18 @@ export default function AdminPage() {
   const [editingBracket, setEditingBracket] = useState<TaxBracket | null>(null)
   const [editingFreeZone, setEditingFreeZone] = useState<FreeZone | null>(null)
 
+  // Redirecionar para o dashboard principal
   useEffect(() => {
-    loadData()
-  }, [])
+    // Verificar autenticação
+    const isAuth = localStorage.getItem('admin_authenticated') === 'true'
+    if (!isAuth) {
+      router.push('/admin/login')
+      return
+    }
+    
+    // Redirecionar para o dashboard principal que tem todas as configurações
+    router.push('/admin/dashboard')
+  }, [router])
 
   const loadData = async () => {
     setIsLoading(true)

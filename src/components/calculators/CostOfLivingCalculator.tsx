@@ -50,7 +50,8 @@ export default function CostOfLivingCalculator({ onCalculationUpdate }: CostOfLi
   const [isCalculating, setIsCalculating] = useState(false)
 
   // Usar dados do banco ou fallback para dados padrão
-  const countries = config?.costOfLiving?.countries || {
+  // Garantir que sempre seja um objeto válido
+  const defaultCountries = {
     brasil: { 
       name: 'Brasil', 
       currency: 'BRL',
@@ -107,8 +108,13 @@ export default function CostOfLivingCalculator({ onCalculationUpdate }: CostOfLi
     }
   }
 
+  const countries = (config?.costOfLiving?.countries && typeof config.costOfLiving.countries === 'object') 
+    ? config.costOfLiving.countries 
+    : defaultCountries
+
   // Usar dados do banco ou fallback para dados padrão
-  const lifestyles = config?.costOfLiving?.lifestyles || {
+  // Garantir que sempre seja um objeto válido
+  const defaultLifestyles = {
     budget: { 
       name: 'Econômico', 
       multiplier: 0.6,
@@ -130,6 +136,10 @@ export default function CostOfLivingCalculator({ onCalculationUpdate }: CostOfLi
       description: 'Villa, carros de luxo, restaurantes finos'
     }
   }
+
+  const lifestyles = (config?.costOfLiving?.lifestyles && typeof config.costOfLiving.lifestyles === 'object')
+    ? config.costOfLiving.lifestyles
+    : defaultLifestyles
 
   // Usar dados do banco para custos base
   const getBaseCosts = (country: string) => {
@@ -158,7 +168,7 @@ export default function CostOfLivingCalculator({ onCalculationUpdate }: CostOfLi
   }
 
   const calculateCostOfLiving = () => {
-    if (configLoading || !config) return
+    if (configLoading || !countries || !lifestyles) return
     
     setIsCalculating(true)
     
@@ -262,11 +272,13 @@ export default function CostOfLivingCalculator({ onCalculationUpdate }: CostOfLi
                 onChange={(e) => handleInputChange('country', e.target.value)}
                 className="input-field"
               >
-                {countries ? Object.entries(countries).map(([key, country]) => (
-                  <option key={key} value={key}>
-                    {country.name}
-                  </option>
-                )) : null}
+                {countries && typeof countries === 'object' 
+                  ? Object.entries(countries).map(([key, country]: [string, any]) => (
+                      <option key={key} value={key}>
+                        {country?.name || key}
+                      </option>
+                    ))
+                  : null}
               </select>
             </div>
 
@@ -280,13 +292,15 @@ export default function CostOfLivingCalculator({ onCalculationUpdate }: CostOfLi
                 onChange={(e) => handleInputChange('city', e.target.value)}
                 className="input-field"
               >
-                {(countries as any)[formData.country]?.cities ? 
-                  Object.entries((countries as any)[formData.country].cities).map(([key, city]) => (
-                    <option key={key} value={key}>
-                      {(city as any).name}
-                    </option>
-                  )) : null
-                }
+                {countries && 
+                 (countries as any)[formData.country]?.cities && 
+                 typeof (countries as any)[formData.country].cities === 'object'
+                  ? Object.entries((countries as any)[formData.country].cities).map(([key, city]: [string, any]) => (
+                      <option key={key} value={key}>
+                        {city?.name || key}
+                      </option>
+                    ))
+                  : null}
               </select>
             </div>
           </div>
@@ -309,11 +323,13 @@ export default function CostOfLivingCalculator({ onCalculationUpdate }: CostOfLi
                 onChange={(e) => handleInputChange('lifestyle', e.target.value)}
                 className="input-field"
               >
-                {lifestyles ? Object.entries(lifestyles).map(([key, lifestyle]) => (
-                  <option key={key} value={key}>
-                    {lifestyle.name}
-                  </option>
-                )) : null}
+                {lifestyles && typeof lifestyles === 'object'
+                  ? Object.entries(lifestyles).map(([key, lifestyle]: [string, any]) => (
+                      <option key={key} value={key}>
+                        {lifestyle?.name || key}
+                      </option>
+                    ))
+                  : null}
               </select>
               <p className="text-xs text-gray-500 mt-1">
                 {lifestyles[formData.lifestyle as LifestyleKey]?.description}

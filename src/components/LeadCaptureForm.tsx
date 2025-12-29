@@ -4,12 +4,11 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { User, Mail, Phone, MessageCircle, ArrowRight, Loader2 } from 'lucide-react'
+import { User, Mail, MessageCircle, ArrowRight, Loader2 } from 'lucide-react'
 
 const leadSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
   email: z.string().email('Email inválido'),
-  phone: z.string().min(10, 'Telefone deve ter pelo menos 10 dígitos'),
   whatsapp: z.string().min(10, 'WhatsApp deve ter pelo menos 10 dígitos'),
   source: z.string().default('calculator'),
 })
@@ -109,25 +108,6 @@ export default function LeadCaptureForm({ onSuccess }: LeadCaptureFormProps) {
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-            )}
-          </div>
-
-          {/* Telefone */}
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-              <Phone className="w-4 h-4 inline mr-2" />
-              Telefone
-            </label>
-            <input
-              {...register('phone')}
-              type="tel"
-              id="phone"
-              className="input-field"
-              placeholder="+55 11 99999-9999"
-              disabled={isSubmitting}
-            />
-            {errors.phone && (
-              <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
             )}
           </div>
 

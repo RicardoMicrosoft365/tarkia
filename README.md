@@ -12,7 +12,7 @@ Calculadora web completa para análise fiscal empresarial, investimentos imobili
 - **Recharts** - Gráficos
 - **Framer Motion** - Animações
 - **jsPDF + html2canvas** - Geração de PDF
-#teste1
+#teste1 tabel
 
 - Node.js 18+
 - npm ou yarn

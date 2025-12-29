@@ -65,7 +65,7 @@ export default function RealEstateCalculator({ onCalculationUpdate }: RealEstate
   const [isCalculating, setIsCalculating] = useState(false)
 
   // Usar dados do banco ou fallback para dados padrão
-  const emirates = config?.realEstate?.emirates || {
+  const defaultEmirates = {
     dubai: { 
       name: 'Dubai', 
       appreciationRate: 0.07,
@@ -92,16 +92,24 @@ export default function RealEstateCalculator({ onCalculationUpdate }: RealEstate
     }
   }
 
+  const emirates = (config?.realEstate?.emirates && typeof config.realEstate.emirates === 'object')
+    ? config.realEstate.emirates
+    : defaultEmirates
+
   // Usar dados do banco ou fallback para dados padrão
-  const propertyTypes = config?.realEstate?.propertyTypes || {
+  const defaultPropertyTypes = {
     apartment: { name: 'Apartamento', maintenanceRate: 0.02, serviceRate: 0.08 },
     villa: { name: 'Villa', maintenanceRate: 0.03, serviceRate: 0.10 },
     townhouse: { name: 'Townhouse', maintenanceRate: 0.025, serviceRate: 0.09 },
     commercial: { name: 'Comercial', maintenanceRate: 0.03, serviceRate: 0.02 }
   }
 
+  const propertyTypes = (config?.realEstate?.propertyTypes && typeof config.realEstate.propertyTypes === 'object')
+    ? config.realEstate.propertyTypes
+    : defaultPropertyTypes
+
   const calculateROI = () => {
-    if (configLoading || !config) return
+    if (configLoading || !emirates || !propertyTypes) return
     
     setIsCalculating(true)
     
@@ -257,11 +265,13 @@ export default function RealEstateCalculator({ onCalculationUpdate }: RealEstate
                 onChange={(e) => handleInputChange('emirate', e.target.value)}
                 className="input-field"
               >
-                {emirates ? Object.entries(emirates).map(([key, emirate]) => (
-                  <option key={key} value={key}>
-                    {emirate.name}
-                  </option>
-                )) : null}
+                {emirates && typeof emirates === 'object'
+                  ? Object.entries(emirates).map(([key, emirate]: [string, any]) => (
+                      <option key={key} value={key}>
+                        {emirate?.name || key}
+                      </option>
+                    ))
+                  : null}
               </select>
             </div>
 
@@ -275,11 +285,13 @@ export default function RealEstateCalculator({ onCalculationUpdate }: RealEstate
                 onChange={(e) => handleInputChange('propertyType', e.target.value)}
                 className="input-field"
               >
-                {propertyTypes ? Object.entries(propertyTypes).map(([key, type]) => (
-                  <option key={key} value={key}>
-                    {type.name}
-                  </option>
-                )) : null}
+                {propertyTypes && typeof propertyTypes === 'object'
+                  ? Object.entries(propertyTypes).map(([key, type]: [string, any]) => (
+                      <option key={key} value={key}>
+                        {type?.name || key}
+                      </option>
+                    ))
+                  : null}
               </select>
             </div>
 

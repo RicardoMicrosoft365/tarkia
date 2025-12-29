@@ -1,12 +1,38 @@
 import { useState, useEffect } from 'react'
 
+interface TaxBreakdown {
+  pis?: number
+  cofins?: number
+  irpj?: number
+  csll?: number
+  icms?: number
+  iss?: number
+  federal?: number
+  total: number
+}
+
+interface TaxRatesByYear {
+  [year: string]: TaxBreakdown
+}
+
+interface TaxRatesByRegime {
+  presumido?: TaxRatesByYear
+  real?: TaxBreakdown
+}
+
+interface CompanyTypeConfig {
+  name: string
+  description: string
+  taxRates: TaxRatesByRegime
+}
+
 interface CalculatorConfig {
   business: {
     taxRegimes: {
-      [key: string]: { rate: number, description: string }
+      [key: string]: { rate: number, description: string, name?: string }
     }
     companyTypes: {
-      [key: string]: { setupCost: number, accountingCost: number, description: string }
+      [key: string]: CompanyTypeConfig | { setupCost: number, accountingCost: number, description: string, name?: string }
     }
     freeZones: {
       [key: string]: { name: string, annualCost: number, setupCost: number, visaCost: number, description: string }

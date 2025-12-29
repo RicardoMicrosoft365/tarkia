@@ -5,16 +5,14 @@ import { useRouter } from 'next/navigation'
 import { 
   Settings, 
   Calculator, 
-  Building, 
   Plane, 
-  ShoppingCart, 
-  Compass,
   Save,
   RefreshCw,
   LogOut,
   Eye,
   Edit3,
-  Users
+  Users,
+  X
 } from 'lucide-react'
 import { useCalculatorConfig } from '@/hooks/useCalculatorConfig'
 import LeadsManager from '@/components/admin/LeadsManager'
@@ -211,10 +209,7 @@ export default function AdminDashboard() {
             <nav className="-mb-px flex space-x-8 px-6">
               {[
                 { id: 'business', name: 'Análise Fiscal', icon: Calculator },
-                { id: 'realEstate', name: 'Imóveis', icon: Building },
-                { id: 'costOfLiving', name: 'Custo de Vida', icon: ShoppingCart },
                 { id: 'visa', name: 'Vistos', icon: Plane },
-                { id: 'planning', name: 'Planejamento', icon: Compass },
                 { id: 'leads', name: 'Leads', icon: Users }
               ].map((tab) => {
                 const Icon = tab.icon
@@ -260,23 +255,10 @@ export default function AdminDashboard() {
                   setConfig(prev => prev ? { ...prev, business: newConfig } : null)
                 } />
               )}
-              {activeTab === 'realEstate' && (
-                <RealEstateConfigTab config={config.realEstate} onChange={(newConfig) => 
-                  setConfig(prev => prev ? { ...prev, realEstate: newConfig } : null)
-                } />
-              )}
-              {activeTab === 'costOfLiving' && (
-                <CostOfLivingConfigTab config={config.costOfLiving} onChange={(newConfig) => 
-                  setConfig(prev => prev ? { ...prev, costOfLiving: newConfig } : null)
-                } />
-              )}
               {activeTab === 'visa' && (
                 <VisaConfigTab config={config.visa} onChange={(newConfig) => 
                   setConfig(prev => prev ? { ...prev, visa: newConfig } : null)
                 } />
-              )}
-              {activeTab === 'planning' && (
-                <PlanningConfigTab />
               )}
               {activeTab === 'leads' && (
                 <LeadsManager />
@@ -291,50 +273,228 @@ export default function AdminDashboard() {
 
 // Componentes de configuração para cada aba
 function BusinessConfigTab({ config, onChange }: { config: any, onChange: (config: any) => void }) {
+  const [openModal, setOpenModal] = useState<string | null>(null)
+
+  // Garantir que config existe
+  if (!config || !config.companyTypes) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500">Carregando configurações...</p>
+      </div>
+    )
+  }
+
+  // Filtrar apenas tipos brasileiros
+  const brazilianCompanyTypes = Object.entries(config.companyTypes || {}).filter(
+    ([key]) => key !== 'unipessoal' && key !== 'quotas'
+  )
+  
+  // Debug temporário
+  console.log('BusinessConfigTab - Config:', {
+    hasConfig: !!config,
+    hasCompanyTypes: !!config?.companyTypes,
+    companyTypesKeys: Object.keys(config?.companyTypes || {}),
+    brazilianCompanyTypes: brazilianCompanyTypes.length
+  })
+
   return (
     <div className="space-y-8">
       <h2 className="text-xl font-semibold text-gray-800 mb-6">Configurações - Análise Fiscal</h2>
       
-      {/* Regimes Tributários */}
+      {/* Regimes Tributários - Cards Clicáveis */}
       <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Regimes Tributários</h3>
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">Regimes Tributários - Alíquotas por Tipo de Empresa</h3>
+        <p className="text-sm text-gray-600 mb-6">
+          Clique em um regime tributário para configurar as alíquotas detalhadas por tipo de empresa.
+        </p>
+        
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Object.entries(config.taxRegimes).map(([key, regime]: [string, any]) => (
-            <div key={key} className="bg-white p-4 rounded-lg border">
-              <h4 className="font-medium text-gray-800 mb-3">{regime.name || key}</h4>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Taxa (%)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={regime.rate * 100}
-                    onChange={(e) => {
-                      const newConfig = { ...config }
-                      newConfig.taxRegimes[key].rate = parseFloat(e.target.value) / 100
-                      onChange(newConfig)
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Descrição</label>
-                  <input
-                    type="text"
-                    value={regime.description}
-                    onChange={(e) => {
-                      const newConfig = { ...config }
-                      newConfig.taxRegimes[key].description = e.target.value
-                      onChange(newConfig)
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-              </div>
+          {/* Card Simples Nacional */}
+          <div 
+            onClick={() => setOpenModal('simples')}
+            className="bg-white p-6 rounded-lg border-2 border-primary-200 cursor-pointer hover:border-primary-400 hover:shadow-lg transition-all"
+          >
+            <h4 className="text-lg font-semibold text-gray-800 mb-2">Simples Nacional</h4>
+            <p className="text-sm text-gray-600 mb-4">{config.taxRegimes?.simples?.description || ''}</p>
+            <div className="flex items-center justify-between mt-4">
+              <span className="text-sm text-gray-500">Clique para configurar</span>
+              <Edit3 className="w-5 h-5 text-primary-600" />
             </div>
-          ))}
+          </div>
+
+          {/* Card Lucro Presumido */}
+          <div 
+            onClick={() => setOpenModal('presumido')}
+            className="bg-white p-6 rounded-lg border-2 border-primary-200 cursor-pointer hover:border-primary-400 hover:shadow-lg transition-all"
+          >
+            <h4 className="text-lg font-semibold text-gray-800 mb-2">Lucro Presumido</h4>
+            <p className="text-sm text-gray-600 mb-4">{config.taxRegimes?.presumido?.description || ''}</p>
+            <div className="flex items-center justify-between mt-4">
+              <span className="text-sm text-gray-500">Clique para configurar</span>
+              <Edit3 className="w-5 h-5 text-primary-600" />
+            </div>
+          </div>
+
+          {/* Card Lucro Real */}
+          <div 
+            onClick={() => setOpenModal('real')}
+            className="bg-white p-6 rounded-lg border-2 border-primary-200 cursor-pointer hover:border-primary-400 hover:shadow-lg transition-all"
+          >
+            <h4 className="text-lg font-semibold text-gray-800 mb-2">Lucro Real</h4>
+            <p className="text-sm text-gray-600 mb-4">{config.taxRegimes?.real?.description || ''}</p>
+            <div className="flex items-center justify-between mt-4">
+              <span className="text-sm text-gray-500">Clique para configurar</span>
+              <Edit3 className="w-5 h-5 text-primary-600" />
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Modal Simples Nacional */}
+      {openModal === 'simples' && (
+        <TaxRegimeModal
+          title="Simples Nacional"
+          description={config.taxRegimes?.simples?.description || ''}
+          onClose={() => setOpenModal(null)}
+        >
+          <div className="space-y-4">
+            {brazilianCompanyTypes.length > 0 ? (
+              brazilianCompanyTypes.map(([companyKey, companyType]: [string, any]) => {
+                // Garantir que taxRates existe
+                const updatedCompanyType = { ...companyType }
+                if (!updatedCompanyType.taxRates) {
+                  updatedCompanyType.taxRates = {}
+                }
+                if (!updatedCompanyType.taxRates.simples) {
+                  updatedCompanyType.taxRates.simples = {
+                    federal: 0,
+                    icms: 0,
+                    iss: 0,
+                    total: 0
+                  }
+                }
+                
+                return (
+                  <div key={companyKey} className="bg-gray-50 p-4 rounded-lg border">
+                    <h5 className="font-medium text-gray-700 mb-3">{updatedCompanyType.name || companyKey}</h5>
+                    <SimplesTaxConfig
+                      companyKey={companyKey}
+                      companyType={updatedCompanyType}
+                      onUpdate={(updated) => {
+                        const newConfig = { ...config }
+                        newConfig.companyTypes[companyKey] = updated
+                        onChange(newConfig)
+                      }}
+                    />
+                  </div>
+                )
+              })
+            ) : (
+              <div className="text-center py-8 text-gray-500 border border-gray-200 rounded-lg p-6">
+                <p className="mb-2">Nenhum tipo de empresa brasileiro encontrado.</p>
+                <p className="text-sm">Os tipos esperados são: Indústria, Serviços e Comércio.</p>
+                <p className="text-xs mt-2 text-gray-400">
+                  Debug: {JSON.stringify(Object.keys(config?.companyTypes || {}))}
+                </p>
+              </div>
+            )}
+          </div>
+        </TaxRegimeModal>
+      )}
+
+      {/* Modal Lucro Presumido */}
+      {openModal === 'presumido' && (
+        <TaxRegimeModal
+          title="Lucro Presumido"
+          description={config.taxRegimes?.presumido?.description || ''}
+          onClose={() => setOpenModal(null)}
+        >
+          <div className="space-y-4">
+            {brazilianCompanyTypes.length > 0 ? (
+              brazilianCompanyTypes.map(([companyKey, companyType]: [string, any]) => {
+                // Garantir que taxRates existe
+                const updatedCompanyType = { ...companyType }
+                if (!updatedCompanyType.taxRates) {
+                  updatedCompanyType.taxRates = {}
+                }
+                if (!updatedCompanyType.taxRates.presumido) {
+                  updatedCompanyType.taxRates.presumido = {
+                    '2026': { federal: 0, icms: 0, iss: 0, total: 0 },
+                    '2027': { federal: 0, icms: 0, iss: 0, total: 0 },
+                    '2028': { federal: 0, icms: 0, iss: 0, total: 0 }
+                  }
+                }
+                
+                return (
+                  <CompanyTypeTaxConfig
+                    key={companyKey}
+                    companyKey={companyKey}
+                    companyType={updatedCompanyType}
+                    onUpdate={(updated) => {
+                      const newConfig = { ...config }
+                      newConfig.companyTypes[companyKey] = updated
+                      onChange(newConfig)
+                    }}
+                    showOnlyRegime="presumido"
+                  />
+                )
+              })
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                Nenhum tipo de empresa brasileiro configurado. Os tipos disponíveis são: Indústria, Serviços e Comércio.
+              </div>
+            )}
+          </div>
+        </TaxRegimeModal>
+      )}
+
+      {/* Modal Lucro Real */}
+      {openModal === 'real' && (
+        <TaxRegimeModal
+          title="Lucro Real"
+          description={config.taxRegimes?.real?.description || ''}
+          onClose={() => setOpenModal(null)}
+        >
+          <div className="space-y-4">
+            {brazilianCompanyTypes.length > 0 ? (
+              brazilianCompanyTypes.map(([companyKey, companyType]: [string, any]) => {
+                // Garantir que taxRates existe
+                const updatedCompanyType = { ...companyType }
+                if (!updatedCompanyType.taxRates) {
+                  updatedCompanyType.taxRates = {}
+                }
+                if (!updatedCompanyType.taxRates.real) {
+                  updatedCompanyType.taxRates.real = {
+                    pis: 0,
+                    cofins: 0,
+                    irpj: 0,
+                    csll: 0,
+                    total: 0
+                  }
+                }
+                
+                return (
+                  <CompanyTypeTaxConfig
+                    key={companyKey}
+                    companyKey={companyKey}
+                    companyType={updatedCompanyType}
+                    onUpdate={(updated) => {
+                      const newConfig = { ...config }
+                      newConfig.companyTypes[companyKey] = updated
+                      onChange(newConfig)
+                    }}
+                    showOnlyRegime="real"
+                  />
+                )
+              })
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                Nenhum tipo de empresa brasileiro configurado. Os tipos disponíveis são: Indústria, Serviços e Comércio.
+              </div>
+            )}
+          </div>
+        </TaxRegimeModal>
+      )}
 
       {/* Free Zones */}
       <div className="bg-gray-50 p-6 rounded-lg">
@@ -433,192 +593,6 @@ function BusinessConfigTab({ config, onChange }: { config: any, onChange: (confi
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
             />
           </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function RealEstateConfigTab({ config, onChange }: { config: any, onChange: (config: any) => void }) {
-  return (
-    <div className="space-y-8">
-      <h2 className="text-xl font-semibold text-gray-800 mb-6">Configurações - Investimento Imobiliário</h2>
-      
-      {/* Emirados */}
-      <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Emirados</h3>
-        <div className="space-y-4">
-          {Object.entries(config.emirates).map(([key, emirate]: [string, any]) => (
-            <div key={key} className="bg-white p-4 rounded-lg border">
-              <h4 className="font-medium text-gray-800 mb-3">{emirate.name}</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Taxa de Valorização (%)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={emirate.appreciationRate * 100}
-                    onChange={(e) => {
-                      const newConfig = { ...config }
-                      newConfig.emirates[key].appreciationRate = parseFloat(e.target.value) / 100
-                      onChange(newConfig)
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Yield Médio (%)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={emirate.averageYield * 100}
-                    onChange={(e) => {
-                      const newConfig = { ...config }
-                      newConfig.emirates[key].averageYield = parseFloat(e.target.value) / 100
-                      onChange(newConfig)
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Áreas (separadas por vírgula)</label>
-                  <input
-                    type="text"
-                    value={emirate.areas.join(', ')}
-                    onChange={(e) => {
-                      const newConfig = { ...config }
-                      newConfig.emirates[key].areas = e.target.value.split(',').map((area: string) => area.trim())
-                      onChange(newConfig)
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Custos */}
-      <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Custos Operacionais</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Taxa de Registro (%)</label>
-            <input
-              type="number"
-              step="0.01"
-              value={config.costs.registrationFee * 100}
-              onChange={(e) => {
-                const newConfig = { ...config }
-                newConfig.costs.registrationFee = parseFloat(e.target.value) / 100
-                onChange(newConfig)
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Taxa de Corretagem (%)</label>
-            <input
-              type="number"
-              step="0.01"
-              value={config.costs.brokerageFee * 100}
-              onChange={(e) => {
-                const newConfig = { ...config }
-                newConfig.costs.brokerageFee = parseFloat(e.target.value) / 100
-                onChange(newConfig)
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Taxa de Seguro (%)</label>
-            <input
-              type="number"
-              step="0.001"
-              value={config.costs.insuranceRate * 100}
-              onChange={(e) => {
-                const newConfig = { ...config }
-                newConfig.costs.insuranceRate = parseFloat(e.target.value) / 100
-                onChange(newConfig)
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function CostOfLivingConfigTab({ config, onChange }: { config: any, onChange: (config: any) => void }) {
-  return (
-    <div className="space-y-8">
-      <h2 className="text-xl font-semibold text-gray-800 mb-6">Configurações - Custo de Vida</h2>
-      
-      {/* Países */}
-      <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Custos Base por País</h3>
-        <div className="space-y-4">
-          {Object.entries(config.countries).map(([key, country]: [string, any]) => (
-            <div key={key} className="bg-white p-4 rounded-lg border">
-              <h4 className="font-medium text-gray-800 mb-3">{country.name}</h4>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Moradia (USD/mês)</label>
-                  <input
-                    type="number"
-                    value={country.baseCosts.housing}
-                    onChange={(e) => {
-                      const newConfig = { ...config }
-                      newConfig.countries[key].baseCosts.housing = parseInt(e.target.value)
-                      onChange(newConfig)
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Transporte (USD/mês)</label>
-                  <input
-                    type="number"
-                    value={country.baseCosts.transportation}
-                    onChange={(e) => {
-                      const newConfig = { ...config }
-                      newConfig.countries[key].baseCosts.transportation = parseInt(e.target.value)
-                      onChange(newConfig)
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Alimentação (USD/mês)</label>
-                  <input
-                    type="number"
-                    value={country.baseCosts.food}
-                    onChange={(e) => {
-                      const newConfig = { ...config }
-                      newConfig.countries[key].baseCosts.food = parseInt(e.target.value)
-                      onChange(newConfig)
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Moeda</label>
-                  <input
-                    type="text"
-                    value={country.currency}
-                    onChange={(e) => {
-                      const newConfig = { ...config }
-                      newConfig.countries[key].currency = e.target.value
-                      onChange(newConfig)
-                    }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>
@@ -765,41 +739,317 @@ function VisaConfigTab({ config, onChange }: { config: any, onChange: (config: a
   )
 }
 
-function PlanningConfigTab() {
+// Componente para configurar impostos por tipo de empresa
+function CompanyTypeTaxConfig({ 
+  companyKey, 
+  companyType, 
+  onUpdate,
+  showOnlyRegime
+}: { 
+  companyKey: string
+  companyType: any
+  onUpdate: (updated: any) => void
+  showOnlyRegime?: 'presumido' | 'real'
+}) {
+  const [activeRegime, setActiveRegime] = useState<'presumido' | 'real'>(showOnlyRegime || 'presumido')
+  const [activeYear, setActiveYear] = useState<string>('2026')
+
+  const updateTaxRate = (regime: 'presumido' | 'real', year: string | null, field: string, value: number) => {
+    const updated = { ...companyType }
+    
+    if (regime === 'presumido' && year) {
+      if (!updated.taxRates.presumido) updated.taxRates.presumido = {}
+      if (!updated.taxRates.presumido[year]) updated.taxRates.presumido[year] = { total: 0 }
+      updated.taxRates.presumido[year][field] = value
+      // Recalcular total
+      const yearData = updated.taxRates.presumido[year]
+      yearData.total = (yearData.federal || 0) + (yearData.icms || 0) + (yearData.iss || 0)
+    } else if (regime === 'real') {
+      if (!updated.taxRates.real) updated.taxRates.real = { total: 0 }
+      updated.taxRates.real[field] = value
+      // Recalcular total
+      const realData = updated.taxRates.real
+      realData.total = (realData.pis || 0) + (realData.cofins || 0) + (realData.irpj || 0) + (realData.csll || 0)
+    }
+    
+    onUpdate(updated)
+  }
+
   return (
-    <div className="space-y-8">
-      <h2 className="text-xl font-semibold text-gray-800 mb-6">Configurações - Planejamento 360°</h2>
-      
-      <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Configurações Gerais</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="bg-gray-50 p-4 rounded-lg border">
+      <div className="mb-4">
+        <h5 className="font-medium text-gray-800 mb-1">{companyType.name}</h5>
+        <p className="text-xs text-gray-600">{companyType.description}</p>
+      </div>
+      {!showOnlyRegime && (
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => setActiveRegime('presumido')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium ${
+              activeRegime === 'presumido'
+                ? 'bg-primary-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Lucro Presumido
+          </button>
+          <button
+            onClick={() => setActiveRegime('real')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium ${
+              activeRegime === 'real'
+                ? 'bg-primary-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Lucro Real
+          </button>
+        </div>
+      )}
+
+      {activeRegime === 'presumido' && (
+        <div className="space-y-4">
+          <div className="flex gap-2 mb-4">
+            {['2026', '2027', '2028'].map(year => (
+              <button
+                key={year}
+                onClick={() => setActiveYear(year)}
+                className={`px-3 py-1 rounded text-sm ${
+                  activeYear === year
+                    ? 'bg-primary-500 text-white'
+                    : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Federal (%)</label>
+              <input
+                type="number"
+                step="0.0001"
+                value={((companyType.taxRates?.presumido?.[activeYear]?.federal || 0) * 100).toFixed(4)}
+                onChange={(e) => updateTaxRate('presumido', activeYear, 'federal', parseFloat(e.target.value) / 100)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">ICMS (%)</label>
+              <input
+                type="number"
+                step="0.0001"
+                value={((companyType.taxRates?.presumido?.[activeYear]?.icms || 0) * 100).toFixed(4)}
+                onChange={(e) => updateTaxRate('presumido', activeYear, 'icms', parseFloat(e.target.value) / 100)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">ISS (%)</label>
+              <input
+                type="number"
+                step="0.0001"
+                value={((companyType.taxRates?.presumido?.[activeYear]?.iss || 0) * 100).toFixed(4)}
+                onChange={(e) => updateTaxRate('presumido', activeYear, 'iss', parseFloat(e.target.value) / 100)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-1">Total (%)</label>
+              <input
+                type="number"
+                step="0.0001"
+                value={((companyType.taxRates?.presumido?.[activeYear]?.total || 0) * 100).toFixed(4)}
+                disabled
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeRegime === 'real' && (
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Taxa de Desconto (%)</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">PIS (%)</label>
             <input
               type="number"
-              step="0.01"
-              defaultValue="5"
+              step="0.0001"
+              value={((companyType.taxRates?.real?.pis || 0) * 100).toFixed(4)}
+              onChange={(e) => updateTaxRate('real', null, 'pis', parseFloat(e.target.value) / 100)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Período de Projeção (anos)</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">COFINS (%)</label>
             <input
               type="number"
-              defaultValue="10"
+              step="0.0001"
+              value={((companyType.taxRates?.real?.cofins || 0) * 100).toFixed(4)}
+              onChange={(e) => updateTaxRate('real', null, 'cofins', parseFloat(e.target.value) / 100)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">IRPJ (%)</label>
+            <input
+              type="number"
+              step="0.0001"
+              value={((companyType.taxRates?.real?.irpj || 0) * 100).toFixed(4)}
+              onChange={(e) => updateTaxRate('real', null, 'irpj', parseFloat(e.target.value) / 100)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">CSLL (%)</label>
+            <input
+              type="number"
+              step="0.0001"
+              value={((companyType.taxRates?.real?.csll || 0) * 100).toFixed(4)}
+              onChange={(e) => updateTaxRate('real', null, 'csll', parseFloat(e.target.value) / 100)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Total (%)</label>
+            <input
+              type="number"
+              step="0.0001"
+              value={((companyType.taxRates?.real?.total || 0) * 100).toFixed(4)}
+              disabled
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
             />
           </div>
         </div>
-      </div>
+      )}
+    </div>
+  )
+}
 
-      <div className="bg-blue-50 p-6 rounded-lg">
-        <h3 className="text-lg font-semibold text-blue-800 mb-4">Informações</h3>
-        <p className="text-blue-700">
-          O planejamento 360° combina automaticamente os dados de todas as outras calculadoras.
-          As configurações específicas são definidas em cada aba individual.
-        </p>
+// Componente para configurar Simples Nacional
+function SimplesTaxConfig({ 
+  companyKey, 
+  companyType, 
+  onUpdate 
+}: { 
+  companyKey: string
+  companyType: any
+  onUpdate: (updated: any) => void 
+}) {
+  const updateTaxRate = (field: string, value: number) => {
+    const updated = { ...companyType }
+    if (!updated.taxRates.simples) updated.taxRates.simples = {}
+    updated.taxRates.simples[field] = value
+    
+    // Recalcular total baseado nos campos disponíveis
+    const simplesData = updated.taxRates.simples
+    simplesData.total = (simplesData.federal || 0) + (simplesData.icms || 0) + (simplesData.iss || 0) +
+                       (simplesData.pis || 0) + (simplesData.cofins || 0) + (simplesData.irpj || 0) + (simplesData.csll || 0)
+    
+    onUpdate(updated)
+  }
+
+  const simplesRates = companyType.taxRates?.simples || {}
+
+  return (
+    <div className="bg-white p-4 rounded-lg">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">Federal (%)</label>
+          <input
+            type="number"
+            step="0.0001"
+            value={((simplesRates.federal || 0) * 100).toFixed(4)}
+            onChange={(e) => updateTaxRate('federal', parseFloat(e.target.value) / 100)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            placeholder="5.39"
+          />
+          <p className="text-xs text-gray-500 mt-1">PIS, COFINS, CSLL, IRPJ</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">ICMS (%)</label>
+          <input
+            type="number"
+            step="0.0001"
+            value={((simplesRates.icms || 0) * 100).toFixed(4)}
+            onChange={(e) => updateTaxRate('icms', parseFloat(e.target.value) / 100)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            placeholder="18.00"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">ISS (%)</label>
+          <input
+            type="number"
+            step="0.0001"
+            value={((simplesRates.iss || 0) * 100).toFixed(4)}
+            onChange={(e) => updateTaxRate('iss', parseFloat(e.target.value) / 100)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            placeholder="5.00"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-1">Total (%)</label>
+          <input
+            type="number"
+            step="0.0001"
+            value={((simplesRates.total || 0) * 100).toFixed(4)}
+            disabled
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
+          />
+        </div>
+      </div>
+      <p className="text-xs text-gray-500 mt-2">
+        {companyKey === 'industria' || companyKey === 'comercio' 
+          ? 'Indústria/Comércio: Federal (5.39%) + ICMS (18%)'
+          : 'Serviços: Federal (11.39%) + ISS (5%)'}
+      </p>
+    </div>
+  )
+}
+
+// Componente Modal para Regimes Tributários
+function TaxRegimeModal({ 
+  title, 
+  description, 
+  children, 
+  onClose 
+}: { 
+  title: string
+  description: string
+  children: React.ReactNode
+  onClose: () => void
+}) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+          <div>
+            <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
+            <p className="text-sm text-gray-600 mt-1">{description}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Fechar modal"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        <div className="p-6">
+          {children}
+        </div>
+        <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+          >
+            Fechar
+          </button>
+        </div>
       </div>
     </div>
   )
 }
+

@@ -1,24 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { 
   Calculator, 
-  Building, 
-  ShoppingCart, 
   Plane, 
-  Compass,
   Download,
   TrendingUp,
   DollarSign,
   FileText
 } from 'lucide-react'
+import jsPDF from 'jspdf'
 import BusinessCalculator from './calculators/BusinessCalculator'
-import RealEstateCalculator from './calculators/RealEstateCalculator'
-import CostOfLivingCalculator from './calculators/CostOfLivingCalculator'
 import VisaCalculator from './calculators/VisaCalculator'
-import PlanningCalculator from './calculators/PlanningCalculator'
 
-type Tab = 'business' | 'realestate' | 'costofliving' | 'visa' | 'planning'
+type Tab = 'business' | 'visa'
 
 type CalculationsData = {
   [key in Tab]?: any
@@ -27,6 +22,8 @@ type CalculationsData = {
 export default function TarkiaCalculator() {
   const [activeTab, setActiveTab] = useState<Tab>('business')
   const [calculations, setCalculations] = useState<CalculationsData>({})
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
+  const calculatorRef = useRef<HTMLDivElement>(null)
 
   const tabs = [
     {
@@ -36,28 +33,10 @@ export default function TarkiaCalculator() {
       description: 'Análise fiscal e otimização tributária'
     },
     {
-      id: 'realestate' as Tab,
-      label: 'Imóveis',
-      icon: Building,
-      description: 'ROI e análise de investimentos'
-    },
-    {
-      id: 'costofliving' as Tab,
-      label: 'Custo de Vida',
-      icon: ShoppingCart,
-      description: 'Comparativo de gastos mensais'
-    },
-    {
       id: 'visa' as Tab,
       label: 'Vistos',
       icon: Plane,
       description: 'Custos e processos de residência'
-    },
-    {
-      id: 'planning' as Tab,
-      label: 'Planejamento 360°',
-      icon: Compass,
-      description: 'Visão completa do investimento'
     },
   ]
 
@@ -69,16 +48,420 @@ export default function TarkiaCalculator() {
   }
 
   const generatePDFReport = async () => {
+    if (isGeneratingPDF) return
+    
     try {
-      // Aqui você implementaria a geração do PDF
-      console.log('Gerando relatório PDF...', calculations)
+      setIsGeneratingPDF(true)
       
-      // Simulação de delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const pdf = new jsPDF('p', 'mm', 'a4')
+      const pageWidth = pdf.internal.pageSize.getWidth()
+      const pageHeight = pdf.internal.pageSize.getHeight()
+      const margin = 15
+      let yPosition = margin
       
-      alert('📄 Relatório PDF gerado com sucesso!')
+      // Cabeçalho
+      pdf.setFillColor(30, 41, 59) // Cor primária
+      pdf.rect(0, 0, pageWidth, 40, 'F')
+      
+      pdf.setTextColor(255, 255, 255)
+      pdf.setFontSize(24)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('TARKIA', margin, 20)
+      
+      pdf.setFontSize(14)
+      pdf.setFont('helvetica', 'normal')
+      pdf.text('Relatório de Otimização Fiscal', margin, 30)
+      
+      pdf.setTextColor(0, 0, 0)
+      yPosition = 50
+      
+      // Data
+      const today = new Date().toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      })
+      pdf.setFontSize(10)
+      pdf.setTextColor(100, 100, 100)
+      pdf.text(`Gerado em: ${today}`, pageWidth - margin, yPosition, { align: 'right' })
+      
+      yPosition += 15
+      pdf.setTextColor(0, 0, 0)
+      
+      // Seção: Análise Empresarial
+      if (calculations.business) {
+        const biz = calculations.business
+        
+        // Título da seção
+        pdf.setFillColor(200, 164, 110) // Cor dourada
+        pdf.rect(margin, yPosition - 5, pageWidth - 2 * margin, 8, 'F')
+        pdf.setTextColor(255, 255, 255)
+        pdf.setFontSize(16)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text('Análise de Otimização Fiscal Empresarial', margin + 2, yPosition + 2)
+        
+        yPosition += 15
+        pdf.setTextColor(0, 0, 0)
+        pdf.setFontSize(11)
+        pdf.setFont('helvetica', 'normal')
+        
+        // Informações básicas
+        pdf.setFont('helvetica', 'bold')
+        pdf.text('Informações do Cálculo:', margin, yPosition)
+        yPosition += 7
+        
+        pdf.setFont('helvetica', 'normal')
+        pdf.text(`Faturamento Anual: $${(biz.annualRevenue || 0).toLocaleString('pt-BR')}`, margin + 5, yPosition)
+        yPosition += 6
+        
+        pdf.text(`Funcionários: ${biz.employees || 0}`, margin + 5, yPosition)
+        yPosition += 6
+        
+        if (biz.freeZone) {
+          pdf.text(`Free Zone Selecionada: ${biz.freeZone}`, margin + 5, yPosition)
+          yPosition += 6
+        }
+        
+        if (biz.originalCountry) {
+          pdf.text(`País de Comparação: ${biz.originalCountry}`, margin + 5, yPosition)
+          yPosition += 6
+        }
+        
+        yPosition += 5
+        
+        // Comparativo de Custos
+        pdf.setFont('helvetica', 'bold')
+        pdf.text('Comparativo de Custos Anuais:', margin, yPosition)
+        yPosition += 7
+        
+        pdf.setFont('helvetica', 'normal')
+        
+        // Brasil - Detalhamento Completo
+        pdf.setTextColor(220, 38, 38) // Vermelho
+        pdf.setFont('helvetica', 'bold')
+        pdf.text(`Brasil (${biz.taxRegime || 'Lucro Presumido'}):`, margin + 5, yPosition)
+        pdf.setFont('helvetica', 'normal')
+        pdf.text(`$${(biz.brazilTotalCost || 0).toLocaleString('pt-BR')}`, pageWidth - margin, yPosition, { align: 'right' })
+        yPosition += 6
+        
+        // Alíquotas aplicadas
+        if (biz.taxRates && Object.keys(biz.taxRates).length > 0) {
+          pdf.setFont('helvetica', 'bold')
+          pdf.setFontSize(9)
+          pdf.setTextColor(100, 100, 100)
+          pdf.text('Alíquotas Aplicadas:', margin + 10, yPosition)
+          yPosition += 5
+          pdf.setFont('helvetica', 'normal')
+          pdf.setFontSize(8)
+          
+          if (biz.taxRates.pis !== undefined) {
+            pdf.text(`  PIS: ${(biz.taxRates.pis * 100).toFixed(2)}%`, margin + 10, yPosition)
+            yPosition += 4
+          }
+          if (biz.taxRates.cofins !== undefined) {
+            pdf.text(`  COFINS: ${(biz.taxRates.cofins * 100).toFixed(2)}%`, margin + 10, yPosition)
+            yPosition += 4
+          }
+          if (biz.taxRates.irpj !== undefined) {
+            pdf.text(`  IRPJ: ${(biz.taxRates.irpj * 100).toFixed(2)}%`, margin + 10, yPosition)
+            yPosition += 4
+          }
+          if (biz.taxRates.csll !== undefined) {
+            pdf.text(`  CSLL: ${(biz.taxRates.csll * 100).toFixed(2)}%`, margin + 10, yPosition)
+            yPosition += 4
+          }
+          if (biz.taxRates.federal !== undefined) {
+            pdf.text(`  Federal: ${(biz.taxRates.federal * 100).toFixed(2)}%`, margin + 10, yPosition)
+            yPosition += 4
+          }
+          if (biz.taxRates.icms !== undefined) {
+            pdf.text(`  ICMS: ${(biz.taxRates.icms * 100).toFixed(2)}%`, margin + 10, yPosition)
+            yPosition += 4
+          }
+          if (biz.taxRates.iss !== undefined) {
+            pdf.text(`  ISS: ${(biz.taxRates.iss * 100).toFixed(2)}%`, margin + 10, yPosition)
+            yPosition += 4
+          }
+          if (biz.taxRates.total !== undefined) {
+            pdf.setFont('helvetica', 'bold')
+            pdf.text(`  Total: ${(biz.taxRates.total * 100).toFixed(2)}%`, margin + 10, yPosition)
+            yPosition += 4
+          }
+          
+          yPosition += 2
+          pdf.setFontSize(10)
+          pdf.setTextColor(0, 0, 0)
+        }
+        
+        // Breakdown detalhado de impostos
+        if (biz.taxBreakdown) {
+          pdf.setFont('helvetica', 'bold')
+          pdf.setFontSize(10)
+          pdf.setTextColor(0, 0, 0)
+          pdf.text('Detalhamento de Impostos:', margin + 10, yPosition)
+          yPosition += 5
+          pdf.setFont('helvetica', 'normal')
+          
+          if (biz.taxBreakdown.pis !== undefined) {
+            pdf.text(`  PIS: $${biz.taxBreakdown.pis.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+            yPosition += 5
+          }
+          if (biz.taxBreakdown.cofins !== undefined) {
+            pdf.text(`  COFINS: $${biz.taxBreakdown.cofins.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+            yPosition += 5
+          }
+          if (biz.taxBreakdown.irpj !== undefined) {
+            pdf.text(`  IRPJ: $${biz.taxBreakdown.irpj.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+            yPosition += 5
+          }
+          if (biz.taxBreakdown.csll !== undefined) {
+            pdf.text(`  CSLL: $${biz.taxBreakdown.csll.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+            yPosition += 5
+          }
+          if (biz.taxBreakdown.federal !== undefined) {
+            pdf.text(`  Federal (PIS/COFINS/IRPJ/CSLL): $${biz.taxBreakdown.federal.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+            yPosition += 5
+          }
+          if (biz.taxBreakdown.icms !== undefined) {
+            pdf.text(`  ICMS: $${biz.taxBreakdown.icms.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+            yPosition += 5
+          }
+          if (biz.taxBreakdown.iss !== undefined) {
+            pdf.text(`  ISS: $${biz.taxBreakdown.iss.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+            yPosition += 5
+          }
+        } else if (biz.brazilTax) {
+          pdf.text(`  - Impostos: $${biz.brazilTax.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+          yPosition += 5
+        }
+        
+        if (biz.brazilPayroll) {
+          pdf.text(`  - Folha de Pagamento: $${biz.brazilPayroll.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+          yPosition += 5
+        }
+        if (biz.brazilOperational) {
+          pdf.text(`  - Custos Operacionais: $${biz.brazilOperational.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+          yPosition += 5
+        }
+        
+        yPosition += 3
+        
+        // Dubai
+        pdf.setTextColor(37, 99, 235) // Azul
+        pdf.setFont('helvetica', 'bold')
+        pdf.text('Dubai/UAE:', margin + 5, yPosition)
+        pdf.setFont('helvetica', 'normal')
+        pdf.text(`$${(biz.dubaiTotalCost || 0).toLocaleString('pt-BR')}`, pageWidth - margin, yPosition, { align: 'right' })
+        yPosition += 6
+        
+        if (biz.dubaiLicense) {
+          pdf.text(`  - Licença Free Zone: $${biz.dubaiLicense.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+          yPosition += 5
+        }
+        if (biz.dubaiSetup) {
+          pdf.text(`  - Custo de Setup: $${biz.dubaiSetup.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+          yPosition += 5
+        }
+        if (biz.dubaiVisas) {
+          pdf.text(`  - Vistos: $${biz.dubaiVisas.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+          yPosition += 5
+        }
+        if (biz.dubaiOffice) {
+          pdf.text(`  - Escritório: $${biz.dubaiOffice.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+          yPosition += 5
+        }
+        if (biz.dubaiServices) {
+          pdf.text(`  - Serviços: $${biz.dubaiServices.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+          yPosition += 5
+        }
+        if (biz.dubaiTax) {
+          pdf.text(`  - Corporate Tax: $${biz.dubaiTax.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+          yPosition += 5
+        }
+        
+        yPosition += 5
+        
+        // Economia
+        pdf.setTextColor(34, 197, 94) // Verde
+        pdf.setFont('helvetica', 'bold')
+        pdf.setFontSize(12)
+        pdf.text('ECONOMIA ANUAL:', margin, yPosition)
+        pdf.setFontSize(14)
+        pdf.text(`$${(biz.savings || 0).toLocaleString('pt-BR')}`, pageWidth - margin, yPosition, { align: 'right' })
+        yPosition += 7
+        
+        pdf.setFontSize(10)
+        pdf.setFont('helvetica', 'normal')
+        pdf.setTextColor(0, 0, 0)
+        if (biz.savingsPercentage) {
+          pdf.text(`Percentual de economia: ${biz.savingsPercentage.toFixed(1)}%`, margin, yPosition)
+          yPosition += 6
+        }
+        
+        // Projeção 5 anos e Análise
+        if (biz.savings && biz.savings > 0) {
+          const savings5Years = biz.savings * 5
+          pdf.setFont('helvetica', 'bold')
+          pdf.setFontSize(11)
+          pdf.text('Projeção e Análise:', margin, yPosition)
+          yPosition += 6
+          pdf.setFont('helvetica', 'normal')
+          pdf.setFontSize(10)
+          
+          pdf.text(`Projeção 5 Anos:`, margin + 5, yPosition)
+          yPosition += 5
+          pdf.text(`  - Economia total em 5 anos: $${savings5Years.toLocaleString('pt-BR')}`, margin + 10, yPosition)
+          yPosition += 5
+          
+          if (biz.dubaiSetup) {
+            const roi = ((savings5Years / biz.dubaiSetup) * 100).toFixed(0)
+            pdf.text(`  - ROI do investimento inicial: ${roi}%`, margin + 10, yPosition)
+            yPosition += 5
+            
+            const paybackMonths = (biz.dubaiSetup / biz.savings * 12).toFixed(1)
+            const paybackYears = Math.ceil(biz.dubaiSetup / biz.savings)
+            pdf.text(`  - Tempo de retorno: ${paybackMonths} meses (${paybackYears} anos)`, margin + 10, yPosition)
+            yPosition += 5
+          }
+          
+          yPosition += 3
+        }
+        
+        // Comparativo de Free Zones (se disponível)
+        if (biz.freeZoneComparisons && biz.freeZoneComparisons.length > 0) {
+          // Verificar se precisa de nova página
+          if (yPosition > pageHeight - 60) {
+            pdf.addPage()
+            yPosition = margin
+          }
+          
+          pdf.setFont('helvetica', 'bold')
+          pdf.setFontSize(11)
+          pdf.setTextColor(0, 0, 0)
+          pdf.text('Comparativo de Free Zones:', margin, yPosition)
+          yPosition += 7
+          
+          pdf.setFont('helvetica', 'normal')
+          pdf.setFontSize(8)
+          
+          // Cabeçalho da tabela
+          const colWidths = [45, 25, 25, 25, 25, 25, 25, 30]
+          const startX = margin
+          let xPos = startX
+          
+          pdf.setFont('helvetica', 'bold')
+          pdf.setFontSize(7)
+          pdf.text('Free Zone', xPos, yPosition)
+          xPos += colWidths[0]
+          pdf.text('Licença', xPos, yPosition)
+          xPos += colWidths[1]
+          pdf.text('Setup', xPos, yPosition)
+          xPos += colWidths[2]
+          pdf.text('Vistos', xPos, yPosition)
+          xPos += colWidths[3]
+          pdf.text('Escrit.', xPos, yPosition)
+          xPos += colWidths[4]
+          pdf.text('Serv.', xPos, yPosition)
+          xPos += colWidths[5]
+          pdf.text('Impostos', xPos, yPosition)
+          xPos += colWidths[6]
+          pdf.text('Total', xPos, yPosition)
+          
+          yPosition += 5
+          pdf.setFont('helvetica', 'normal')
+          
+          // Linhas da tabela
+          biz.freeZoneComparisons.forEach((zone: any, index: number) => {
+            if (yPosition > pageHeight - 20) {
+              pdf.addPage()
+              yPosition = margin
+            }
+            
+            xPos = startX
+            pdf.setFontSize(7)
+            pdf.text(zone.name.substring(0, 15), xPos, yPosition)
+            xPos += colWidths[0]
+            pdf.text(`$${(zone.license / 1000).toFixed(0)}k`, xPos, yPosition)
+            xPos += colWidths[1]
+            pdf.text(`$${(zone.setup / 1000).toFixed(0)}k`, xPos, yPosition)
+            xPos += colWidths[2]
+            pdf.text(`$${(zone.visas / 1000).toFixed(1)}k`, xPos, yPosition)
+            xPos += colWidths[3]
+            pdf.text(`$${(zone.office / 1000).toFixed(0)}k`, xPos, yPosition)
+            xPos += colWidths[4]
+            pdf.text(`$${(zone.services / 1000).toFixed(0)}k`, xPos, yPosition)
+            xPos += colWidths[5]
+            pdf.text(`$${(zone.tax / 1000).toFixed(1)}k`, xPos, yPosition)
+            xPos += colWidths[6]
+            pdf.setFont('helvetica', 'bold')
+            pdf.text(`$${(zone.total / 1000).toFixed(0)}k`, xPos, yPosition)
+            pdf.setFont('helvetica', 'normal')
+            
+            yPosition += 5
+          })
+          
+          yPosition += 5
+        }
+        
+        yPosition += 10
+      }
+      
+      // Seção: Vistos (se houver)
+      if (calculations.visa && yPosition < pageHeight - 40) {
+        const visa = calculations.visa
+        
+        pdf.setFillColor(200, 164, 110)
+        pdf.rect(margin, yPosition - 5, pageWidth - 2 * margin, 8, 'F')
+        pdf.setTextColor(255, 255, 255)
+        pdf.setFontSize(16)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text('Análise de Vistos', margin + 2, yPosition + 2)
+        
+        yPosition += 15
+        pdf.setTextColor(0, 0, 0)
+        pdf.setFontSize(11)
+        pdf.setFont('helvetica', 'normal')
+        
+        if (visa.visaType) {
+          pdf.text(`Tipo de Visto: ${visa.visaType}`, margin, yPosition)
+          yPosition += 6
+        }
+        if (visa.totalCost) {
+          pdf.text(`Custo Total: $${visa.totalCost.toLocaleString('pt-BR')}`, margin, yPosition)
+          yPosition += 6
+        }
+        if (visa.validityPeriod) {
+          pdf.text(`Validade: ${visa.validityPeriod} anos`, margin, yPosition)
+          yPosition += 6
+        }
+        if (visa.processingTime) {
+          pdf.text(`Tempo de Processamento: ${visa.processingTime} dias`, margin, yPosition)
+          yPosition += 6
+        }
+        
+        yPosition += 10
+      }
+      
+      // Rodapé
+      if (yPosition > pageHeight - 30) {
+        pdf.addPage()
+        yPosition = margin
+      }
+      
+      pdf.setFontSize(9)
+      pdf.setTextColor(100, 100, 100)
+      pdf.text('Este relatório foi gerado automaticamente pela Calculadora Tarkia.', margin, pageHeight - 15)
+      pdf.text('Para mais informações, visite: www.tarkia.ae', margin, pageHeight - 10)
+      pdf.text('© Tarkia Consultoria - Todos os direitos reservados', pageWidth - margin, pageHeight - 10, { align: 'right' })
+      
+      // Salvar PDF
+      const fileName = `Relatorio_Tarkia_${new Date().toISOString().split('T')[0]}.pdf`
+      pdf.save(fileName)
+      
+      setIsGeneratingPDF(false)
     } catch (error) {
       console.error('Erro ao gerar PDF:', error)
+      setIsGeneratingPDF(false)
       alert('❌ Erro ao gerar relatório. Tente novamente.')
     }
   }
@@ -115,35 +498,16 @@ export default function TarkiaCalculator() {
       </div>
 
       {/* Tab Content */}
-      <div className="min-h-[600px]">
+      <div ref={calculatorRef} className="min-h-[600px]">
         {activeTab === 'business' && (
           <BusinessCalculator 
             onCalculationUpdate={(data) => handleCalculationUpdate('business', data)}
           />
         )}
         
-        {activeTab === 'realestate' && (
-          <RealEstateCalculator 
-            onCalculationUpdate={(data) => handleCalculationUpdate('realestate', data)}
-          />
-        )}
-        
-        {activeTab === 'costofliving' && (
-          <CostOfLivingCalculator 
-            onCalculationUpdate={(data) => handleCalculationUpdate('costofliving', data)}
-          />
-        )}
-        
         {activeTab === 'visa' && (
           <VisaCalculator 
             onCalculationUpdate={(data) => handleCalculationUpdate('visa', data)}
-          />
-        )}
-        
-        {activeTab === 'planning' && (
-          <PlanningCalculator 
-            calculations={calculations}
-            onCalculationUpdate={(data) => handleCalculationUpdate('planning', data)}
           />
         )}
       </div>
@@ -156,7 +520,7 @@ export default function TarkiaCalculator() {
             Resumo dos Resultados
           </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {calculations.business && (
               <div className="bg-white p-4 rounded-lg border border-gray-200">
                 <h4 className="font-semibold text-gray-700 mb-2">Economia Fiscal</h4>
@@ -166,35 +530,25 @@ export default function TarkiaCalculator() {
                 <p className="text-sm text-gray-500">por ano</p>
               </div>
             )}
-            
-            {calculations.realestate && (
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
-                <h4 className="font-semibold text-gray-700 mb-2">ROI Imobiliário</h4>
-                <p className="text-2xl font-bold text-blue-600">
-                  {calculations.realestate.yield ? (calculations.realestate.yield * 100).toFixed(1) : '0'}%
-                </p>
-                <p className="text-sm text-gray-500">yield anual</p>
-              </div>
-            )}
-            
-            {calculations.costofliving && (
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
-                <h4 className="font-semibold text-gray-700 mb-2">Custo de Vida</h4>
-                <p className="text-2xl font-bold text-purple-600">
-                  ${calculations.costofliving.totalMonthly?.toLocaleString() || '0'}
-                </p>
-                <p className="text-sm text-gray-500">por mês</p>
-              </div>
-            )}
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={generatePDFReport}
-              className="btn-primary flex items-center gap-2 justify-center"
+              disabled={isGeneratingPDF}
+              className="btn-primary flex items-center gap-2 justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
+              {isGeneratingPDF ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Gerando PDF...
+                </>
+              ) : (
+                <>
               <Download className="w-4 h-4" />
               Baixar Relatório Completo
+                </>
+              )}
             </button>
             
             <button className="btn-secondary flex items-center gap-2 justify-center">

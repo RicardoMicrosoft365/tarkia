@@ -15,7 +15,7 @@
   }
   
   body {
-    @apply bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen;
+    @apply bg-white min-h-screen;
   }
 }
 
@@ -46,32 +46,6 @@
   
   .tab-inactive {
     @apply bg-gray-100 text-gray-600 hover:bg-gray-200;
-  }
-  
-  .gradient-bg {
-    @apply bg-gradient-to-r from-primary-500 via-tarkia-blue to-primary-600;
-  }
-  
-  .text-gradient {
-    @apply bg-gradient-to-r from-primary-600 to-tarkia-blue bg-clip-text text-transparent;
-  }
-  
-  .hero-section {
-    @apply relative overflow-hidden bg-gradient-to-br from-tarkia-blue via-primary-600 to-primary-700;
-  }
-  
-  .hero-section::before {
-    content: '';
-    @apply absolute inset-0 bg-black bg-opacity-10;
-  }
-  
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-  
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
   }
   
   .calculator-card {

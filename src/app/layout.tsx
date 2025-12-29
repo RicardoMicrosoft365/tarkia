@@ -71,11 +71,9 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
       </head>
       <body className={inter.className}>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-          <main className="relative">
-            {children}
-          </main>
-        </div>
+        <main className="min-h-screen bg-white">
+          {children}
+        </main>
       </body>
     </html>
   )

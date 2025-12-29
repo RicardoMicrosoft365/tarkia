@@ -64,7 +64,7 @@ export default function VisaCalculator({ onCalculationUpdate }: VisaCalculatorPr
   const [isCalculating, setIsCalculating] = useState(false)
 
   // Usar dados do banco ou fallback para dados padrão
-  const visaTypes = config?.visa?.types || {
+  const defaultVisaTypes = {
     golden: {
       name: 'Golden Visa (10 anos)',
       description: 'Para investidores em imóveis - USD 544,600',
@@ -102,8 +102,12 @@ export default function VisaCalculator({ onCalculationUpdate }: VisaCalculatorPr
     }
   }
 
+  const visaTypes = (config?.visa?.types && typeof config.visa.types === 'object')
+    ? config.visa.types
+    : defaultVisaTypes
+
   // Usar dados do banco ou fallback para dados padrão
-  const emirates = config?.visa?.emirates || {
+  const defaultEmirates = {
     dubai: { name: 'Dubai', multiplier: 1.0 },
     abu_dhabi: { name: 'Abu Dhabi', multiplier: 0.9 },
     sharjah: { name: 'Sharjah', multiplier: 0.8 },
@@ -113,8 +117,12 @@ export default function VisaCalculator({ onCalculationUpdate }: VisaCalculatorPr
     umm_al_quwain: { name: 'Umm Al Quwain', multiplier: 0.6 }
   }
 
+  const emirates = (config?.visa?.emirates && typeof config.visa.emirates === 'object')
+    ? config.visa.emirates
+    : defaultEmirates
+
   const calculateVisaCosts = () => {
-    if (configLoading || !config) return
+    if (configLoading || !visaTypes || !emirates) return
     
     setIsCalculating(true)
     
@@ -390,11 +398,13 @@ export default function VisaCalculator({ onCalculationUpdate }: VisaCalculatorPr
                 onChange={(e) => handleInputChange('visaType', e.target.value)}
                 className="input-field"
               >
-                {visaTypes ? Object.entries(visaTypes).map(([key, visa]) => (
-                  <option key={key} value={key}>
-                    {visa.name}
-                  </option>
-                )) : null}
+                {visaTypes && typeof visaTypes === 'object'
+                  ? Object.entries(visaTypes).map(([key, visa]: [string, any]) => (
+                      <option key={key} value={key}>
+                        {visa?.name || key}
+                      </option>
+                    ))
+                  : null}
               </select>
               <p className="text-xs text-gray-500 mt-1">
                 {visaTypes[formData.visaType as keyof typeof visaTypes]?.description}
@@ -411,11 +421,13 @@ export default function VisaCalculator({ onCalculationUpdate }: VisaCalculatorPr
                 onChange={(e) => handleInputChange('emirate', e.target.value)}
                 className="input-field"
               >
-                {emirates ? Object.entries(emirates).map(([key, emirate]) => (
-                  <option key={key} value={key}>
-                    {emirate.name}
-                  </option>
-                )) : null}
+                {emirates && typeof emirates === 'object'
+                  ? Object.entries(emirates).map(([key, emirate]: [string, any]) => (
+                      <option key={key} value={key}>
+                        {emirate?.name || key}
+                      </option>
+                    ))
+                  : null}
               </select>
             </div>
           </div>
