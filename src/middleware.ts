@@ -15,6 +15,16 @@ export function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
+    // Permitir iframe para a página de embed
+    if (pathname.startsWith('/embed')) {
+      const response = NextResponse.next()
+      // Remover X-Frame-Options padrão do Next.js para permitir iframe
+      response.headers.delete('X-Frame-Options')
+      // Permitir frame-ancestors de qualquer origem
+      response.headers.set('Content-Security-Policy', "frame-ancestors *")
+      return response
+    }
+
     // Verificar se é uma rota administrativa
     if (pathname.startsWith('/admin')) {
       // Permitir acesso à página de login

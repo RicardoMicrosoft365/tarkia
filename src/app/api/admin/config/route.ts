@@ -155,9 +155,17 @@ function getDefaultConfig() {
         quotas: { name: 'Sociedade por Quotas', setupCost: 360, accountingCost: 120, description: 'Empresa com múltiplos sócios' }
       },
       freeZones: {
-        DIFC: { name: 'DIFC', annualCost: 15000, setupCost: 25000, visaCost: 3000, description: 'Centro financeiro' },
-        DMCC: { name: 'DMCC', annualCost: 12000, setupCost: 20000, visaCost: 2500, description: 'Commodities' },
-        ADGM: { name: 'ADGM', annualCost: 18000, setupCost: 30000, visaCost: 3500, description: 'Abu Dhabi' }
+        DIFC: { name: 'DIFC', annualCost: 15000, setupCost: 25000, visaCost: 3000, description: 'Centro financeiro internacional' },
+        DMCC: { name: 'DMCC', annualCost: 12000, setupCost: 20000, visaCost: 2500, description: 'Centro global de trading e commodities' },
+        ADGM: { name: 'ADGM', annualCost: 18000, setupCost: 30000, visaCost: 3500, description: 'Centro financeiro premium de Abu Dhabi' },
+        DAFZ: { name: 'DAFZ', annualCost: 8000, setupCost: 15000, visaCost: 2000, description: 'Zona franca do aeroporto' },
+        SHAMS: { name: 'SHAMS', annualCost: 6000, setupCost: 12000, visaCost: 1800, description: 'Cidade da mídia de Sharjah' },
+        IFZA: { name: 'IFZA', annualCost: 9000, setupCost: 10000, visaCost: 2000, description: 'Custos reduzidos, processo simplificado, ideal para PME' },
+        JAFZA: { name: 'JAFZA', annualCost: 14000, setupCost: 15000, visaCost: 2200, description: 'Acesso ao maior porto do Oriente Médio, foco industrial' },
+        RAKEZ: { name: 'RAKEZ', annualCost: 8500, setupCost: 8000, visaCost: 1800, description: 'Excelente custo-benefício, opções industriais variadas' },
+        DIC: { name: 'Dubai Internet City', annualCost: 20000, setupCost: 22000, visaCost: 2800, description: 'Hub tecnológico com grandes players globais' },
+        DUBAI_SOUTH: { name: 'Dubai South', annualCost: 14000, setupCost: 16000, visaCost: 2200, description: 'Integração com futuro macro aeroporto e zona logística' },
+        MEYDAN: { name: 'Meydan Free Zone', annualCost: 11500, setupCost: 12000, visaCost: 2000, description: 'Localização central, custos competitivos' }
       },
       uaeTax: {
         threshold: 102000,

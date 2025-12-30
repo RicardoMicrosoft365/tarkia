@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Calculator, TrendingUp, DollarSign, Building2, Users, FileText, Briefcase, AlertTriangle } from 'lucide-react'
 import { useCalculatorConfig } from '@/hooks/useCalculatorConfig'
+import Tooltip from '@/components/ui/Tooltip'
 
 type CountryKey = 'brasil' | 'portugal' | 'dubai'
-type FreeZoneKey = 'DIFC' | 'DMCC' | 'ADGM' | 'DAFZ' | 'SHAMS'
+type FreeZoneKey = 'DIFC' | 'DMCC' | 'ADGM' | 'DAFZ' | 'SHAMS' | 'IFZA' | 'JAFZA' | 'RAKEZ' | 'DIC' | 'DUBAI_SOUTH' | 'MEYDAN'
 type TaxRegimeKey = 'simples' | 'presumido' | 'real'
 
 interface BusinessCalculatorProps {
@@ -85,8 +86,7 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
     visaCount: 2,
     officeCost: 24000,
     serviceCosts: 12000,
-    companyType: 'industria', // Tipo de empresa: industria, servicos, comercio
-    profitMargin: 20 // Percentual de lucro estimado (padrão 20%)
+    companyType: 'industria' // Tipo de empresa: industria, servicos, comercio
   })
   
   const [result, setResult] = useState<CalculationResult | null>(null)
@@ -221,6 +221,48 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
       setupCost: 12000,
       visaCost: 1800,
       description: 'Cidade da mídia de Sharjah'
+    },
+    IFZA: { 
+      name: 'IFZA (International Free Zone Authority)', 
+      annualCost: 9000, 
+      setupCost: 10000,
+      visaCost: 2000,
+      description: 'Custos reduzidos, processo simplificado, ideal para PME'
+    },
+    JAFZA: { 
+      name: 'JAFZA (Jebel Ali Free Zone)', 
+      annualCost: 14000, 
+      setupCost: 15000,
+      visaCost: 2200,
+      description: 'Acesso ao maior porto do Oriente Médio, foco industrial'
+    },
+    RAKEZ: { 
+      name: 'RAKEZ (Ras Al Khaimah Economic Zone)', 
+      annualCost: 8500, 
+      setupCost: 8000,
+      visaCost: 1800,
+      description: 'Excelente custo-benefício, opções industriais variadas'
+    },
+    DIC: { 
+      name: 'Dubai Internet City', 
+      annualCost: 20000, 
+      setupCost: 22000,
+      visaCost: 2800,
+      description: 'Hub tecnológico com grandes players globais'
+    },
+    DUBAI_SOUTH: { 
+      name: 'Dubai South', 
+      annualCost: 14000, 
+      setupCost: 16000,
+      visaCost: 2200,
+      description: 'Integração com futuro macro aeroporto e zona logística'
+    },
+    MEYDAN: { 
+      name: 'Meydan Free Zone', 
+      annualCost: 11500, 
+      setupCost: 12000,
+      visaCost: 2000,
+      description: 'Localização central, custos competitivos'
     }
   }
 
@@ -245,10 +287,10 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
       } = formData
 
       // Calcular Corporate Tax (mesmo para todas as Free Zones)
+      // Lucro = Faturamento - Custos Operacionais
       const uaeThreshold = config?.business?.uaeTax?.threshold || 102000
       const uaeTaxRate = config?.business?.uaeTax?.rate || 0.09
-      const profitMarginPercent = formData.profitMargin / 100 // Converter percentual para decimal
-      const estimatedProfit = annualRevenue * profitMarginPercent
+      const estimatedProfit = annualRevenue - operationalCosts // Lucro = Receita - Custos Operacionais
       let dubaiTax = 0
       if (estimatedProfit > uaeThreshold) {
         dubaiTax = Math.max(0, (estimatedProfit - uaeThreshold) * uaeTaxRate)
@@ -807,7 +849,6 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
     formData.officeCost,
     formData.serviceCosts,
     formData.companyType,
-    formData.profitMargin,
     config,
     taxRegimesWithNames,
     freeZones,
@@ -839,10 +880,6 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
       newErrors.operationalCosts = 'Custos operacionais não podem ser negativos'
     }
 
-    // Validar percentual de lucro
-    if (formData.profitMargin < 0 || formData.profitMargin > 100) {
-      newErrors.profitMargin = 'Percentual de lucro deve estar entre 0% e 100%'
-    }
     
     // Validar vistos
     if (!formData.visaCount || formData.visaCount <= 0) {
@@ -944,8 +981,9 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Faturamento Anual */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
             Faturamento Anual (USD) <span className="text-red-500">*</span>
+            <Tooltip content="Valor total de receita anual da empresa em dólares americanos. Este valor será usado para calcular os impostos no Brasil e o lucro em Dubai (Lucro = Faturamento - Custos Operacionais)." />
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
@@ -978,8 +1016,9 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
 
         {/* País de Comparação */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
             País de Comparação
+            <Tooltip content="Selecione o país para comparação fiscal. 'Apenas Dubai/UAE' calcula apenas os custos em Dubai. 'Brasil' ou 'Portugal' compara os custos tributários entre o país selecionado e Dubai." />
           </label>
           <select
             value={formData.comparisonCountry}
@@ -1000,8 +1039,9 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
             {/* Tipo de Empresa (Brasil ou Dubai) - Sempre mostrar para todos os regimes */}
             {(formData.comparisonCountry === 'brasil' || formData.comparisonCountry === 'dubai') && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   Categoria da Empresa <span className="text-red-500">*</span>
+                  <Tooltip content="Selecione o tipo de atividade da empresa: Indústria (produção/manufatura), Serviços (prestação de serviços) ou Comércio (venda de produtos). Cada categoria tem alíquotas tributárias diferentes no Brasil." />
                 </label>
                 <select
                   id="companyType"
@@ -1028,8 +1068,9 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
             {/* Regime Tributário (Brasil ou Dubai) */}
             {(formData.comparisonCountry === 'brasil' || formData.comparisonCountry === 'dubai') && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   Tipo de Regime
+                  <Tooltip content="Regime tributário brasileiro para comparação: Simples Nacional (até 6-23% dependendo da categoria), Lucro Presumido (15-28% com variações por ano) ou Lucro Real (33% fixo). Em Dubai, este campo é apenas para referência, pois usa Corporate Tax de 9%." />
                 </label>
                 <select
                   value={formData.taxRegime}
@@ -1053,8 +1094,9 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
             {/* Tipo de Sociedade (apenas Portugal) */}
             {formData.comparisonCountry === 'portugal' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   Tipo de Sociedade <span className="text-red-500">*</span>
+                  <Tooltip content="Tipo de estrutura societária em Portugal: Sociedade Unipessoal (um único sócio) ou Sociedade por Quotas (múltiplos sócios). Cada tipo tem custos de setup e contabilidade diferentes." />
                 </label>
                 <select
                   id="companyType"
@@ -1091,8 +1133,9 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Número de Funcionários */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                 Número de Funcionários/Sócios
+                <Tooltip content="Total de pessoas que trabalharão na empresa, incluindo sócios e funcionários. Este número é usado para calcular os custos de folha de pagamento e encargos sociais no Brasil/Portugal." />
               </label>
               <input
                 type="number"
@@ -1110,8 +1153,9 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
 
             {/* Custos Operacionais */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Custos Operacionais Anuais (USD)
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                Custos Operacionais Anuais (USD) <span className="text-red-500">*</span>
+                <Tooltip content="Custos operacionais anuais da empresa (aluguel, serviços, marketing, etc.). Em Dubai, este valor é subtraído do faturamento para calcular o lucro: Lucro = Faturamento - Custos Operacionais. O Corporate Tax (9%) é aplicado apenas sobre o lucro acima de USD 102,000." />
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
@@ -1136,7 +1180,7 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
                 <p className="text-xs text-red-600 mt-1">{errors.operationalCosts}</p>
               ) : (
                 <p className="text-xs text-gray-500 mt-1">
-                  Aluguel, serviços, marketing, etc. • {formatCurrency(formData.operationalCosts)}
+                  Aluguel, serviços, marketing, etc. Em Dubai: Lucro = Faturamento - Custos Operacionais
                 </p>
               )}
             </div>
@@ -1149,37 +1193,12 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
             <Building2 className="w-5 h-5 text-purple-600" />
             Configuração Dubai
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {/* Margem de Lucro Estimada */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Margem de Lucro (%) <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                id="profitMargin"
-                name="profitMargin"
-                value={formData.profitMargin}
-                onChange={(e) => handleInputChange('profitMargin', Number(e.target.value))}
-                className={`input-field ${errors.profitMargin ? 'border-red-500 border-2' : ''}`}
-                placeholder="20"
-                min="0"
-                max="100"
-                step="0.1"
-              />
-              {errors.profitMargin ? (
-                <p className="text-xs text-red-600 mt-1">{errors.profitMargin}</p>
-              ) : (
-                <p className="text-xs text-gray-500 mt-1">
-                  Para cálculo do Corporate Tax (9% sobre lucro acima de $102k)
-                </p>
-              )}
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Free Zone */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                 Free Zone
+                <Tooltip content="Selecione a Free Zone onde a empresa será estabelecida. Cada Free Zone tem custos diferentes de licença anual, setup inicial e visto. Todas seguem o mesmo Corporate Tax de 9% sobre lucro acima de USD 102,000." />
           </label>
           <select
             value={formData.freeZone}
@@ -1197,10 +1216,11 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
               </p>
             </div>
 
-            {/* Número de Vistos */}
+            {/* N° de Vistos */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Número de Vistos Necessários <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                N° de Vistos Necessários <span className="text-red-500">*</span>
+                <Tooltip content="Quantidade de vistos de residência/emprego necessários para sócios e funcionários. O custo do visto varia conforme a Free Zone selecionada. Este valor será multiplicado pelo custo unitário do visto da Free Zone escolhida." />
               </label>
               <input
                 id="visaCount"
@@ -1224,8 +1244,9 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
 
             {/* Custo de Escritório */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                 Custo Anual de Escritório (USD)
+                <Tooltip content="Custo anual do aluguel de escritório físico em Dubai. Este valor é adicionado aos custos operacionais da empresa. Algumas Free Zones exigem escritório físico mínimo, outras permitem flexi desk." />
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
@@ -1257,8 +1278,9 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
 
             {/* Custos de Serviços */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                 Custos de Serviços (USD)
+                <Tooltip content="Custos anuais de serviços profissionais como contabilidade, jurídico, consultoria, etc. Este valor é adicionado aos custos operacionais da empresa em Dubai." />
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
@@ -1670,8 +1692,8 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
                 {formData.comparisonCountry === 'dubai' && (
                   <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
                     <p className="text-sm text-green-800">
-                      <strong>💡 Nota:</strong> Em Free Zones, geralmente há isenção de Corporate Tax até certo limite. 
-                      O cálculo acima considera a nova legislação de Corporate Tax (9% sobre lucro acima de USD 102,000).
+                      <strong>💡 Nota:</strong> O Corporate Tax é calculado sobre o lucro (Faturamento - Custos Operacionais). 
+                      Se o lucro for maior que USD 102,000, aplica-se 9% sobre o excedente.
                     </p>
                   </div>
                 )}

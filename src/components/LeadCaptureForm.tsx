@@ -112,7 +112,7 @@ export default function LeadCaptureForm({ onSuccess }: LeadCaptureFormProps) {
           </div>
 
           {/* WhatsApp */}
-          <div>
+          <div className="md:col-span-2 flex flex-col items-center">
             <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700 mb-2">
               <MessageCircle className="w-4 h-4 inline mr-2" />
               WhatsApp
@@ -121,7 +121,7 @@ export default function LeadCaptureForm({ onSuccess }: LeadCaptureFormProps) {
               {...register('whatsapp')}
               type="tel"
               id="whatsapp"
-              className="input-field"
+              className="input-field w-full max-w-md"
               placeholder="+55 11 99999-9999"
               disabled={isSubmitting}
             />
