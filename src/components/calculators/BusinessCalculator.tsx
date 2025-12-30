@@ -17,7 +17,6 @@ interface CalculationResult {
   // Brasil
   brazilTotalCost: number
   brazilTax: number
-  brazilPayroll: number
   brazilOperational: number
   taxBreakdown?: {
     pis?: number
@@ -336,7 +335,6 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
       
       // === CÁLCULOS BRASIL (sempre calcular para comparação) ===
       let brazilTax = 0
-      let brazilPayroll = 0
       let brazilOperational = 0
       let brazilTaxBreakdown: any = {}
       let brazilTaxRates: any = {}
@@ -519,16 +517,12 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
         }
       }
       
-      // Folha de pagamento (pró-labore + encargos)
-      const averageSalary = 8000 // USD por funcionário/ano
-      brazilPayroll = employees * averageSalary * 1.4 // +40% encargos
       brazilOperational = operationalCosts
       
-      const brazilTotalCost = brazilTax + brazilPayroll + brazilOperational
+      const brazilTotalCost = brazilTax + brazilOperational
       
       // === CÁLCULOS PAÍS DE ORIGEM (para comparação quando não for Dubai) ===
       let originTax = 0
-      let originPayroll = 0
       let originOperational = 0
       let originTaxBreakdown: any = {}
       let originTaxRates: any = {}
@@ -739,9 +733,6 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
           }
         }
         
-        // Folha de pagamento (pró-labore + encargos)
-        const averageSalary = 8000 // USD por funcionário/ano
-        originPayroll = employees * averageSalary * 1.4 // +40% encargos
         originOperational = operationalCosts
       } else if (comparisonCountry === 'portugal') {
         // Cálculos fiscais portugueses conforme escopo do cliente
@@ -755,17 +746,12 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
         
         originTax = annualRevenue * totalTaxRate
         
-        // Segurança Social: 23.75% sobre remunerações
-        const avgSalary = 45000 // EUR por funcionário (convertido para USD)
-        const totalSalaries = employees * avgSalary
-        originPayroll = totalSalaries * 1.2375 // +23.75% segurança social
-        
         // Custos operacionais + contabilidade
         const accountingCost = (companyTypeData as any).accountingCost || 0
         originOperational = operationalCosts + (accountingCost * 12) // EUR/mês para USD/ano
       }
       
-      const originTotalCost = originTax + originPayroll + originOperational
+      const originTotalCost = originTax + originOperational
       
       // === CÁLCULOS DUBAI ===
       const dubaiLicense = freeZoneData.annualCost
@@ -784,7 +770,6 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
       // Se for apenas Dubai, usar os cálculos do Brasil para comparação
       const comparisonTotalCost = comparisonCountry === 'dubai' ? brazilTotalCost : originTotalCost
       const comparisonTax = comparisonCountry === 'dubai' ? brazilTax : originTax
-      const comparisonPayroll = comparisonCountry === 'dubai' ? brazilPayroll : originPayroll
       const comparisonOperational = comparisonCountry === 'dubai' ? brazilOperational : originOperational
       const comparisonTaxBreakdown = comparisonCountry === 'dubai' 
         ? (Object.keys(brazilTaxBreakdown).length > 0 ? brazilTaxBreakdown : undefined)
@@ -802,7 +787,6 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
         // País de Origem (sempre incluir Brasil para comparação)
         brazilTotalCost: comparisonTotalCost,
         brazilTax: comparisonTax,
-        brazilPayroll: comparisonPayroll,
         brazilOperational: comparisonOperational,
         taxBreakdown: comparisonTaxBreakdown,
         taxRates: comparisonTaxRates,
@@ -1135,7 +1119,7 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                 Número de Funcionários/Sócios
-                <Tooltip content="Total de pessoas que trabalharão na empresa, incluindo sócios e funcionários. Este número é usado para calcular os custos de folha de pagamento e encargos sociais no Brasil/Portugal." />
+                <Tooltip content="Total de pessoas que trabalharão na empresa, incluindo sócios e funcionários." />
               </label>
               <input
                 type="number"
@@ -1170,7 +1154,7 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
                 <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                   <p className="text-xs text-yellow-800 flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4 text-yellow-600" />
-                    <span className="font-semibold">Atenção:</span> O número de funcionários/sócios não pode ser zero. Este valor é necessário para calcular os custos de folha de pagamento.
+                    <span className="font-semibold">Atenção:</span> O número de funcionários/sócios não pode ser zero.
                   </p>
                 </div>
               ) : (
@@ -1646,12 +1630,6 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
                   </span>
                 </div>
                 )}
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Folha de Pagamento</span>
-                  <span className="font-semibold text-red-600">
-                    ${result.brazilPayroll.toLocaleString()}
-                  </span>
-                </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Custos Operacionais</span>
                   <span className="font-semibold text-red-600">

@@ -270,10 +270,6 @@ export default function TarkiaCalculator() {
           yPosition += 5
         }
         
-        if (biz.brazilPayroll) {
-          pdf.text(`  - Folha de Pagamento: $${biz.brazilPayroll.toLocaleString('pt-BR')}`, margin + 10, yPosition)
-          yPosition += 5
-        }
         if (biz.brazilOperational) {
           pdf.text(`  - Custos Operacionais: $${biz.brazilOperational.toLocaleString('pt-BR')}`, margin + 10, yPosition)
           yPosition += 5
