@@ -1140,15 +1140,44 @@ export default function BusinessCalculator({ onCalculationUpdate }: BusinessCalc
               <input
                 type="number"
                 value={formData.employees}
-                onChange={(e) => handleInputChange('employees', Number(e.target.value))}
-                className="input-field"
+                onChange={(e) => {
+                  const value = Number(e.target.value)
+                  handleInputChange('employees', value)
+                  // Validação em tempo real
+                  if (value === 0) {
+                    setErrors(prev => ({ ...prev, employees: 'O número de funcionários/sócios não pode ser zero' }))
+                  } else if (value < 0) {
+                    setErrors(prev => ({ ...prev, employees: 'O número não pode ser negativo' }))
+                  } else {
+                    setErrors(prev => {
+                      const newErrors = { ...prev }
+                      delete newErrors.employees
+                      return newErrors
+                    })
+                  }
+                }}
+                className={`input-field ${errors.employees || formData.employees === 0 ? 'border-red-500 border-2' : ''}`}
                 placeholder="Ex: 2"
-                min="1"
+                min="0"
                 max="50"
               />
-              <p className="text-xs text-gray-500 mt-1">
-                Inclui sócios e funcionários
-              </p>
+              {errors.employees ? (
+                <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3" />
+                  {errors.employees}
+                </p>
+              ) : formData.employees === 0 ? (
+                <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-xs text-yellow-800 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                    <span className="font-semibold">Atenção:</span> O número de funcionários/sócios não pode ser zero. Este valor é necessário para calcular os custos de folha de pagamento.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-xs text-gray-500 mt-1">
+                  Inclui sócios e funcionários
+                </p>
+              )}
             </div>
 
             {/* Custos Operacionais */}

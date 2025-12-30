@@ -57,35 +57,70 @@ export default function TarkiaCalculator() {
       const pageWidth = pdf.internal.pageSize.getWidth()
       const pageHeight = pdf.internal.pageSize.getHeight()
       const margin = 15
-      let yPosition = margin
+      const headerHeight = 40
+      const footerHeight = 20
+      const contentStartY = headerHeight + 10
+      const contentEndY = pageHeight - footerHeight
       
-      // Cabeçalho
-      pdf.setFillColor(30, 41, 59) // Cor primária
-      pdf.rect(0, 0, pageWidth, 40, 'F')
+      // Função para adicionar cabeçalho em todas as páginas
+      const addHeader = (pageNum: number, totalPages?: number) => {
+        // Fundo do cabeçalho
+        pdf.setFillColor(30, 41, 59) // Cor primária
+        pdf.rect(0, 0, pageWidth, headerHeight, 'F')
+        
+        // Logo/Título
+        pdf.setTextColor(255, 255, 255)
+        pdf.setFontSize(24)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text('TARKIA', margin, 20)
+        
+        // Subtítulo
+        pdf.setFontSize(14)
+        pdf.setFont('helvetica', 'normal')
+        pdf.text('Relatório de Otimização Fiscal', margin, 30)
+        
+        // Data no canto direito
+        const today = new Date().toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        })
+        pdf.setFontSize(10)
+        pdf.text(`Gerado em: ${today}`, pageWidth - margin, 20, { align: 'right' })
+        
+        // Número da página
+        if (totalPages) {
+          pdf.text(`Página ${pageNum} de ${totalPages}`, pageWidth - margin, 30, { align: 'right' })
+        } else {
+          pdf.text(`Página ${pageNum}`, pageWidth - margin, 30, { align: 'right' })
+        }
+        
+        pdf.setTextColor(0, 0, 0)
+      }
       
-      pdf.setTextColor(255, 255, 255)
-      pdf.setFontSize(24)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('TARKIA', margin, 20)
+      // Função para adicionar rodapé em todas as páginas
+      const addFooter = () => {
+        const footerY = pageHeight - footerHeight + 5
+        
+        // Linha separadora
+        pdf.setDrawColor(200, 200, 200)
+        pdf.line(margin, pageHeight - footerHeight, pageWidth - margin, pageHeight - footerHeight)
+        
+        // Texto do rodapé
+        pdf.setFontSize(8)
+        pdf.setTextColor(100, 100, 100)
+        pdf.text('Este relatório foi gerado automaticamente pela Calculadora Tarkia.', margin, footerY)
+        pdf.text('Para mais informações, visite: www.tarkia.ae', margin, footerY + 5)
+        pdf.text('© Tarkia Consultoria - Todos os direitos reservados', pageWidth - margin, footerY + 5, { align: 'right' })
+      }
       
-      pdf.setFontSize(14)
-      pdf.setFont('helvetica', 'normal')
-      pdf.text('Relatório de Otimização Fiscal', margin, 30)
+      // Contador de páginas
+      let currentPage = 1
+      let yPosition = contentStartY
       
-      pdf.setTextColor(0, 0, 0)
-      yPosition = 50
+      // Adicionar cabeçalho na primeira página
+      addHeader(currentPage)
       
-      // Data
-      const today = new Date().toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      })
-      pdf.setFontSize(10)
-      pdf.setTextColor(100, 100, 100)
-      pdf.text(`Gerado em: ${today}`, pageWidth - margin, yPosition, { align: 'right' })
-      
-      yPosition += 15
       pdf.setTextColor(0, 0, 0)
       
       // Seção: Análise Empresarial
@@ -300,6 +335,15 @@ export default function TarkiaCalculator() {
         
         // Projeção 5 anos e Análise
         if (biz.savings && biz.savings > 0) {
+          // Verificar se precisa de nova página antes de adicionar esta seção
+          if (yPosition > contentEndY - 40) {
+            addFooter()
+            pdf.addPage()
+            currentPage++
+            addHeader(currentPage)
+            yPosition = contentStartY
+          }
+          
           const savings5Years = biz.savings * 5
           pdf.setFont('helvetica', 'bold')
           pdf.setFontSize(11)
@@ -330,9 +374,12 @@ export default function TarkiaCalculator() {
         // Comparativo de Free Zones (se disponível)
         if (biz.freeZoneComparisons && biz.freeZoneComparisons.length > 0) {
           // Verificar se precisa de nova página
-          if (yPosition > pageHeight - 60) {
+          if (yPosition > contentEndY - 30) {
+            addFooter()
             pdf.addPage()
-            yPosition = margin
+            currentPage++
+            addHeader(currentPage)
+            yPosition = contentStartY
           }
           
           pdf.setFont('helvetica', 'bold')
@@ -372,9 +419,12 @@ export default function TarkiaCalculator() {
           
           // Linhas da tabela
           biz.freeZoneComparisons.forEach((zone: any, index: number) => {
-            if (yPosition > pageHeight - 20) {
+            if (yPosition > contentEndY - 10) {
+              addFooter()
               pdf.addPage()
-              yPosition = margin
+              currentPage++
+              addHeader(currentPage)
+              yPosition = contentStartY
             }
             
             xPos = startX
@@ -407,7 +457,15 @@ export default function TarkiaCalculator() {
       }
       
       // Seção: Vistos (se houver)
-      if (calculations.visa && yPosition < pageHeight - 40) {
+      if (calculations.visa && yPosition < contentEndY - 40) {
+        // Verificar se precisa de nova página
+        if (yPosition > contentEndY - 50) {
+          addFooter()
+          pdf.addPage()
+          currentPage++
+          addHeader(currentPage)
+          yPosition = contentStartY
+        }
         const visa = calculations.visa
         
         pdf.setFillColor(200, 164, 110)
@@ -442,17 +500,8 @@ export default function TarkiaCalculator() {
         yPosition += 10
       }
       
-      // Rodapé
-      if (yPosition > pageHeight - 30) {
-        pdf.addPage()
-        yPosition = margin
-      }
-      
-      pdf.setFontSize(9)
-      pdf.setTextColor(100, 100, 100)
-      pdf.text('Este relatório foi gerado automaticamente pela Calculadora Tarkia.', margin, pageHeight - 15)
-      pdf.text('Para mais informações, visite: www.tarkia.ae', margin, pageHeight - 10)
-      pdf.text('© Tarkia Consultoria - Todos os direitos reservados', pageWidth - margin, pageHeight - 10, { align: 'right' })
+      // Adicionar rodapé na última página
+      addFooter()
       
       // Salvar PDF
       const fileName = `Relatorio_Tarkia_${new Date().toISOString().split('T')[0]}.pdf`

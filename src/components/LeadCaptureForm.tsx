@@ -39,11 +39,14 @@ export default function LeadCaptureForm({ onSuccess }: LeadCaptureFormProps) {
     setIsSubmitting(true)
     setSubmitMessage('')
 
+    // Liberar acesso imediatamente para melhor UX
+    setSubmitMessage('✅ Acesso liberado! Bem-vindo à calculadora Tarkia.')
+    reset()
+    onSuccess(data)
+    setIsSubmitting(false)
+
+    // Salvar lead em background (não bloqueia a UI)
     try {
-      // Simular chamada à API
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Aqui você faria a chamada real para sua API
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: {
@@ -52,20 +55,12 @@ export default function LeadCaptureForm({ onSuccess }: LeadCaptureFormProps) {
         body: JSON.stringify(data),
       })
 
-      if (response.ok) {
-        setSubmitMessage('✅ Acesso liberado! Bem-vindo à calculadora Tarkia.')
-        reset()
-        onSuccess(data)
-      } else {
-        setSubmitMessage('❌ Erro ao processar. Tente novamente.')
+      if (!response.ok) {
+        console.error('Erro ao salvar lead (não crítico):', await response.text())
       }
     } catch (error) {
-      console.error('Erro ao enviar lead:', error)
-      // Para o demo, vamos liberar mesmo se der erro
-      setSubmitMessage('✅ Acesso liberado! Bem-vindo à calculadora Tarkia.')
-      onSuccess(data)
-    } finally {
-      setIsSubmitting(false)
+      // Erro não crítico - apenas log, não bloqueia o acesso
+      console.error('Erro ao salvar lead em background:', error)
     }
   }
 

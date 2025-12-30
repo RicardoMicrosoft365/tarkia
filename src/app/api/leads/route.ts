@@ -25,11 +25,10 @@ export async function POST(request: NextRequest) {
       notes: ''
     }
 
-    const { data, error } = await supabaseAdmin
+    // Inserir sem .select() e .single() para melhor performance
+    const { error } = await supabaseAdmin
       .from('leads')
       .insert(leadData)
-      .select()
-      .single()
 
     if (error) {
       console.error('Erro ao inserir lead:', error)
@@ -39,7 +38,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({ success: true, data })
+    // Retornar sucesso sem esperar os dados retornados (mais rápido)
+    return NextResponse.json({ success: true }, { status: 200 })
   } catch (error) {
     console.error('Erro na API de leads:', error)
     return NextResponse.json(
